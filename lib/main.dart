@@ -21,6 +21,9 @@ import 'package:hamyon/features/payments/domain/repositories/payment_repository.
 import 'package:hamyon/features/payments/domain/usecases/make_payment.dart';
 import 'package:hamyon/features/payments/presentation/cubit/payment_cubit.dart';
 import 'package:hamyon/features/receipt/domain/services/receipt_service.dart';
+import 'package:hamyon/features/settings/data/repositories/settings_repository_impl.dart';
+import 'package:hamyon/features/settings/domain/repositories/settings_repository.dart';
+import 'package:hamyon/features/settings/domain/usecases/settings_usecases.dart';
 import 'package:hamyon/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:hamyon/features/transfer/data/repositories/transfer_repository_impl.dart';
 import 'package:hamyon/features/transfer/domain/repositories/transfer_repository.dart';
@@ -36,6 +39,7 @@ Future<void> main() async {
   final historyRepository = HistoryRepositoryImpl(vault);
   final transferRepository = TransferRepositoryImpl(vault);
   final paymentRepository = PaymentRepositoryImpl(vault);
+  final settingsRepository = SettingsRepositoryImpl(vault);
   final verifyPin = VerifyPin(authRepository);
 
   runApp(
@@ -46,6 +50,7 @@ Future<void> main() async {
         RepositoryProvider<HistoryRepository>.value(value: historyRepository),
         RepositoryProvider<TransferRepository>.value(value: transferRepository),
         RepositoryProvider<PaymentRepository>.value(value: paymentRepository),
+        RepositoryProvider<SettingsRepository>.value(value: settingsRepository),
         RepositoryProvider<ReceiptService>(create: (_) => const ReceiptService()),
       ],
       child: MultiBlocProvider(
@@ -77,7 +82,12 @@ Future<void> main() async {
             ),
           ),
           BlocProvider(create: (_) => HomeCubit()),
-          BlocProvider(create: (_) => SettingsCubit()),
+          BlocProvider(
+            create: (_) => SettingsCubit(
+              getThemeMode: GetThemeMode(settingsRepository),
+              saveThemeMode: SaveThemeMode(settingsRepository),
+            ),
+          ),
         ],
         child: const HamyonApp(),
       ),

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hamyon/core/error/failures.dart';
 import 'package:hamyon/core/security/secure_vault.dart';
 
 void main() {
@@ -41,6 +42,9 @@ void main() {
     await file.writeAsString(changed);
 
     final reopened = SecureVault.forDirectory(directory);
-    expect(await reopened.unlock('1234'), isFalse);
+    await expectLater(
+      reopened.unlock('1234'),
+      throwsA(isA<IntegrityFailure>()),
+    );
   });
 }

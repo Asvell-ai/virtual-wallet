@@ -15,6 +15,8 @@ import 'package:hamyon/features/history/presentation/widgets/transaction_tile.da
 import 'package:hamyon/features/home/presentation/cubit/home_cubit.dart';
 import 'package:hamyon/features/receipt/domain/services/receipt_service.dart';
 import 'package:hamyon/features/receipt/presentation/pages/receipt_page.dart';
+import 'package:hamyon/features/qr/domain/qr_payload.dart';
+import 'package:hamyon/features/qr/presentation/widgets/qr_code_sheet.dart';
 
 class CardsPage extends StatelessWidget {
   const CardsPage({super.key});
@@ -269,7 +271,18 @@ class CardsPage extends StatelessWidget {
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 20),
                                     child: WalletCardTile(
-                                        card: state.cards[index]),
+                                      card: state.cards[index],
+                                      onQrTap: () {
+                                        final card = state.cards[index];
+                                        QrCodeSheet.show(
+                                          context,
+                                          title: 'Karta QR-kodi',
+                                          subtitle:
+                                              '${card.name} • ${AppFormatters.maskedCard(card.number)}',
+                                          payload: QrPayload.card(card),
+                                        );
+                                      },
+                                    ),
                                   ),
                                 ),
                               ),

@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hamyon/core/utils/formatters.dart';
 import 'package:hamyon/features/cards/domain/entities/wallet_card.dart';
 import 'package:hamyon/features/history/domain/entities/wallet_transaction.dart';
+import 'package:hamyon/features/qr/domain/qr_payload.dart';
+import 'package:hamyon/features/qr/presentation/widgets/qr_code_sheet.dart';
 import 'package:hamyon/features/receipt/domain/services/receipt_service.dart';
 import 'package:hamyon/features/receipt/presentation/cubit/receipt_cubit.dart';
 import 'package:hamyon/features/receipt/presentation/cubit/receipt_state.dart';
@@ -99,6 +101,17 @@ class ReceiptPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
+          OutlinedButton.icon(
+            onPressed: () => QrCodeSheet.show(
+              context,
+              title: 'Chek QR-kodi',
+              subtitle: 'Tranzaksiya: ${transaction.id}',
+              payload: QrPayload.receipt(transaction),
+            ),
+            icon: const Icon(Icons.qr_code_2_rounded),
+            label: const Text('QR-kodni ko‘rsatish'),
+          ),
+          const SizedBox(height: 10),
           FilledButton.icon(
             onPressed: state.status == ReceiptStatus.working
                 ? null

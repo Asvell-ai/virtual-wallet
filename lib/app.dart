@@ -31,7 +31,10 @@ class _HamyonAppState extends State<HamyonApp> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.hidden) {
-      context.read<AuthCubit>().lock();
+      final authCubit = context.read<AuthCubit>();
+      if (!authCubit.isBiometricOperationInProgress) {
+        authCubit.lock();
+      }
     }
   }
 
@@ -43,14 +46,16 @@ class _HamyonAppState extends State<HamyonApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) => BlocListener<AuthCubit, AuthState>(
-        listenWhen: (previous, current) =>
-            previous.status == AuthStatus.unlocked &&
-            current.status != AuthStatus.unlocked,
+        listenWhen: (previous, current) => previous.status != current.status,
         listener: (context, state) {
-          context.read<TransferCubit>().clearSensitiveData();
-          context.read<PaymentCubit>().clearSensitiveData();
-          context.read<CardsCubit>().clearSensitiveData();
-          _navigatorKey.currentState?.popUntil((route) => route.isFirst);
+          if (state.status == AuthStatus.unlocked) {
+            context.read<SettingsCubit>().load();
+          } else {
+            context.read<TransferCubit>().clearSensitiveData();
+            context.read<PaymentCubit>().clearSensitiveData();
+            context.read<CardsCubit>().clearSensitiveData();
+            _navigatorKey.currentState?.popUntil((route) => route.isFirst);
+          }
         },
         child: BlocBuilder<SettingsCubit, SettingsState>(
           builder: (context, settings) => MaterialApp(

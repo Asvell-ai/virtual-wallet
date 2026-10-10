@@ -5,5 +5,10 @@ abstract interface class AuthRepository {
   Future<void> verifyPin(String pin);
   Future<DateTime?> blockedUntil();
   Future<int> failedAttempts();
+  Future<bool> isBiometricAvailable();
+  Future<bool> isBiometricEnabled();
+  Future<void> enableBiometrics(String pin);
+  Future<void> disableBiometrics();
+  Future<bool> unlockWithBiometrics();
   void lock();
 }

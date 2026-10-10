@@ -8,6 +8,8 @@
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
 	<string>Virtual Wallet</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Hamyonni xavfsiz ochish uchun Face ID ishlatiladi.</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

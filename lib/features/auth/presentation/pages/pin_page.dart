@@ -210,6 +210,19 @@ class PinPage extends StatelessWidget {
                                   ),
                           ),
                         ),
+                        if (!setup && state.biometricEnabled) ...[
+                          const SizedBox(height: 10),
+                          TextButton.icon(
+                            onPressed:
+                                state.status == AuthStatus.loading || blocked
+                                    ? null
+                                    : context
+                                        .read<AuthCubit>()
+                                        .unlockWithBiometrics,
+                            icon: const Icon(Icons.fingerprint_rounded),
+                            label: const Text('Barmoq izi yoki Face ID'),
+                          ),
+                        ],
                       ],
                     ),
                   );

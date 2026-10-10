@@ -232,5 +232,6 @@ class SecureVault {
         'schemaVersion': 1,
         'cards': <Map<String, dynamic>>[],
         'transactions': <Map<String, dynamic>>[],
+        'settings': <String, dynamic>{'themeMode': 'system'},
       };
 }

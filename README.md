@@ -18,7 +18,9 @@ saqlaydigan Flutter virtual hamyon demo ilovasi.
 - ilova fonga o'tganda yoki 2 daqiqa ishlatilmaganda avtomatik qulf
 - PBKDF2-HMAC-SHA256 + AES-256-GCM bilan shifrlangan lokal fayl
 - har bir tranzaksiya uchun alohida HMAC-SHA256 imzo
-- dark mode
+- light/dark tema tanlovi va uni shifrlangan vault ichida saqlash
+- barmoq izi yoki Face ID orqali hamyonni ochish
+- karta ma’lumoti va tranzaksiya cheki uchun QR-kod
 - premium banking dashboard, karta karuseli va yengil native animatsiyalar
 
 ## Arxitektura
@@ -40,8 +42,9 @@ lib/
     ├── payments/                 # data / domain / presentation
     ├── history/                  # data / domain / presentation
     ├── receipt/                  # domain / presentation
+    ├── qr/                       # domain / presentation
     ├── home/                     # presentation
-    └── settings/                 # presentation
+    └── settings/                 # data / domain / presentation
 ```
 
 Har bir feature o'z entity, repository contract, repository implementation,
@@ -85,74 +88,10 @@ bor.
   o'zgarishni aniqlaydi.
 - Kalitlar ilova qulflanganda xotiradan chiqariladi.
 - Xato urinishlar va blok muddati `flutter_secure_storage` orqali saqlanadi.
+- Biometrik kirish faqat foydalanuvchi PIN bilan yoqqanidan keyin ishlaydi;
+  qurilma tasdig‘i `local_auth`, unlock ma’lumoti esa Keychain/Keystore orqali
+  himoyalangan `flutter_secure_storage` yordamida boshqariladi.
 
 > Bu o'quv/demo loyiha. Haqiqiy bank yoki PCI DSS talablari uchun mustaqil
 > security audit, key attestation, jailbreak/root himoyasi va server tomondagi
 > risk nazorati talab qilinadi.
-
-## Ishga tushirish
-
-Bu repository source qismi platformadan mustaqil tayyorlangan. Birinchi marta
-Android platforma fayllarini Flutter SDK bilan generatsiya qiling:
-
-```bash
-flutter --version # Flutter 3.35+ va Dart 3.9+
-flutter create --platforms=android --org uz.hamyon .
-flutter pub get
-flutter run
-```
-
-`flutter create` mavjud `lib/`, `test/` va `pubspec.yaml` ichidagi loyiha
-kodlarini saqlagan holda yetishmayotgan Android runner fayllarini yaratadi.
-
-## Tekshiruvlar
-
-```bash
-flutter analyze
-flutter test
-```
-
-Testlar quyidagilarni qoplaydi:
-
-- 0.5% komissiya hisoblash;
-- UZCARD raqamini 16 raqam bilan cheklash va 4 tadan guruhlash;
-- vault faylida ochiq matn yo'qligi;
-- yopib-ochgandan keyin ma'lumot saqlanishi;
-- noto'g'ri PIN va o'zgartirilgan ciphertext rad etilishi;
-- muvaffaqiyatli transferda balanslar tengligi;
-- mablag' yetmaganda balanslar o'zgarmasligi;
-- HMAC mos kelmaganda tranzaksiya `tampered` deb belgilanishi.
-
-## APK build
-
-```bash
-flutter clean
-flutter pub get
-flutter test
-flutter build apk --release
-```
-
-APK manzili:
-
-```text
-build/app/outputs/flutter-apk/app-release.apk
-```
-
-## GitHub'ga topshirish
-
-```bash
-git init
-git add .
-git commit -m "feat: build local encrypted Hamyon wallet"
-git branch -M main
-git remote add origin <REPOSITORY_URL>
-git push -u origin main
-```
-
-Topshirish sanasi: **2026-yil 13-oktyabr, seshanba**.
-
-## Keyingi bonuslar
-
-- `local_auth` bilan barmoq izi/Face ID
-- karta yoki chek uchun QR-kod
-- tema tanlovini vault ichida doimiy saqlash

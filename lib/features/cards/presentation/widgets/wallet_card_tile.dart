@@ -5,9 +5,10 @@ import 'package:hamyon/core/utils/formatters.dart';
 import 'package:hamyon/features/cards/domain/entities/wallet_card.dart';
 
 class WalletCardTile extends StatelessWidget {
-  const WalletCardTile({required this.card, super.key});
+  const WalletCardTile({required this.card, this.onQrTap, super.key});
 
   final WalletCard card;
+  final VoidCallback? onQrTap;
 
   @override
   Widget build(BuildContext context) {
@@ -16,10 +17,8 @@ class WalletCardTile extends StatelessWidget {
       tween: Tween(begin: 0.96, end: 1),
       duration: const Duration(milliseconds: 420),
       curve: Curves.easeOutCubic,
-      builder: (context, scale, child) => Transform.scale(
-        scale: scale,
-        child: child,
-      ),
+      builder: (context, scale, child) =>
+          Transform.scale(scale: scale, child: child),
       child: AspectRatio(
         aspectRatio: 1.58,
         child: Container(
@@ -91,6 +90,17 @@ class WalletCardTile extends StatelessWidget {
                           ),
                         ),
                         const Spacer(),
+                        if (onQrTap != null)
+                          IconButton(
+                            onPressed: onQrTap,
+                            tooltip: 'Karta QR-kodi',
+                            style: IconButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor: Colors.white.withOpacity(0.12),
+                            ),
+                            icon: const Icon(Icons.qr_code_2_rounded),
+                          ),
+                        const SizedBox(width: 8),
                         Text(
                           card.type.label,
                           style: const TextStyle(

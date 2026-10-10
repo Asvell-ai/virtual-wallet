@@ -11,10 +11,10 @@ class AuthCubit extends Cubit<AuthState> {
     required AuthRepository repository,
     required CreatePin createPin,
     required UnlockWallet unlockWallet,
-  })  : _repository = repository,
-        _createPin = createPin,
-        _unlockWallet = unlockWallet,
-        super(const AuthState());
+  }) : _repository = repository,
+       _createPin = createPin,
+       _unlockWallet = unlockWallet,
+       super(const AuthState());
 
   static const inactivityDuration = Duration(minutes: 2);
 
@@ -23,35 +23,52 @@ class AuthCubit extends Cubit<AuthState> {
   final UnlockWallet _unlockWallet;
   Timer? _inactivityTimer;
   Timer? _blockTimer;
+  bool _biometricOperationInProgress = false;
+
+  bool get isBiometricOperationInProgress => _biometricOperationInProgress;
 
   Future<void> initialize() async {
+    final biometricAvailable = await _repository.isBiometricAvailable();
+    final biometricEnabled =
+        biometricAvailable && await _repository.isBiometricEnabled();
     final blocked = await _repository.blockedUntil();
     if (blocked != null) {
-      _startBlockTimer(blocked);
+      _startBlockTimer(
+        blocked,
+        biometricAvailable: biometricAvailable,
+        biometricEnabled: biometricEnabled,
+      );
       return;
     }
-    emit(AuthState(
-      status: await _repository.hasVault()
-          ? AuthStatus.locked
-          : AuthStatus.setupRequired,
-      failedAttempts: await _repository.failedAttempts(),
-    ));
+    emit(
+      AuthState(
+        status: await _repository.hasVault()
+            ? AuthStatus.locked
+            : AuthStatus.setupRequired,
+        failedAttempts: await _repository.failedAttempts(),
+        biometricAvailable: biometricAvailable,
+        biometricEnabled: biometricEnabled,
+      ),
+    );
   }
 
   void addDigit(String digit) {
-    if (state.status == AuthStatus.blocked || state.pinInput.length >= 4) return;
-    emit(state.copyWith(
-      pinInput: '${state.pinInput}$digit',
-      clearMessage: true,
-    ));
+    if (state.status == AuthStatus.blocked || state.pinInput.length >= 4) {
+      return;
+    }
+    emit(
+      state.copyWith(pinInput: '${state.pinInput}$digit', clearMessage: true),
+    );
   }
 
   void removeDigit() {
     if (state.pinInput.isEmpty) return;
-    emit(state.copyWith(
-      pinInput: state.pinInput.substring(0, state.pinInput.length - 1),
-      clearMessage: true,
-    ));
+    emit(
+      state.copyWith(
+        pinInput: state.pinInput.substring(0, state.pinInput.length - 1),
+        clearMessage: true,
+      ),
+    );
   }
 
   Future<void> submit() async {
@@ -61,19 +78,23 @@ class AuthCubit extends Cubit<AuthState> {
     }
     if (state.status == AuthStatus.setupRequired) {
       if (!state.isConfirmingSetup) {
-        emit(state.copyWith(
-          setupFirstPin: state.pinInput,
-          pinInput: '',
-          clearMessage: true,
-        ));
+        emit(
+          state.copyWith(
+            setupFirstPin: state.pinInput,
+            pinInput: '',
+            clearMessage: true,
+          ),
+        );
         return;
       }
       if (state.setupFirstPin != state.pinInput) {
-        emit(state.copyWith(
-          pinInput: '',
-          setupFirstPin: '',
-          message: 'PIN-kodlar mos kelmadi. Qayta kiriting.',
-        ));
+        emit(
+          state.copyWith(
+            pinInput: '',
+            setupFirstPin: '',
+            message: 'PIN-kodlar mos kelmadi. Qayta kiriting.',
+          ),
+        );
         return;
       }
     }
@@ -86,16 +107,82 @@ class AuthCubit extends Cubit<AuthState> {
       } else {
         await _unlockWallet(state.pinInput);
       }
-      emit(const AuthState(status: AuthStatus.unlocked));
+      emit(
+        state.copyWith(
+          status: AuthStatus.unlocked,
+          pinInput: '',
+          setupFirstPin: '',
+          clearMessage: true,
+        ),
+      );
       registerActivity();
     } on BlockedFailure catch (error) {
       _startBlockTimer(error.until);
     } on Failure catch (error) {
-      emit(AuthState(
-        status: setup ? AuthStatus.setupRequired : AuthStatus.locked,
-        failedAttempts: await _repository.failedAttempts(),
-        message: error.message,
-      ));
+      emit(
+        state.copyWith(
+          status: setup ? AuthStatus.setupRequired : AuthStatus.locked,
+          failedAttempts: await _repository.failedAttempts(),
+          message: error.message,
+          pinInput: '',
+        ),
+      );
+    }
+  }
+
+  Future<void> unlockWithBiometrics() async {
+    if (state.status != AuthStatus.locked || !state.biometricEnabled) return;
+    emit(state.copyWith(status: AuthStatus.loading, clearMessage: true));
+    _biometricOperationInProgress = true;
+    try {
+      final unlocked = await _repository.unlockWithBiometrics();
+      if (!unlocked) {
+        emit(state.copyWith(status: AuthStatus.locked));
+        return;
+      }
+      emit(state.copyWith(status: AuthStatus.unlocked, clearMessage: true));
+      registerActivity();
+    } on BlockedFailure catch (error) {
+      _startBlockTimer(error.until);
+    } on Failure catch (error) {
+      emit(
+        state.copyWith(
+          status: AuthStatus.locked,
+          biometricEnabled: await _repository.isBiometricEnabled(),
+          message: error.message,
+        ),
+      );
+    } finally {
+      _biometricOperationInProgress = false;
+    }
+  }
+
+  Future<void> biometricSettingChanged({
+    required bool enabled,
+    String? pin,
+  }) async {
+    _biometricOperationInProgress = enabled;
+    try {
+      if (enabled) {
+        if (pin == null || pin.length != 4) {
+          throw const ValidationFailure('4 xonali PIN-kodni kiriting');
+        }
+        await _repository.enableBiometrics(pin);
+      } else {
+        await _repository.disableBiometrics();
+      }
+      emit(
+        state.copyWith(
+          biometricEnabled: enabled,
+          message: enabled
+              ? 'Biometrik kirish yoqildi'
+              : 'Biometrik kirish o‘chirildi',
+        ),
+      );
+    } on Failure catch (error) {
+      emit(state.copyWith(message: error.message));
+    } finally {
+      _biometricOperationInProgress = false;
     }
   }
 
@@ -109,7 +196,13 @@ class AuthCubit extends Cubit<AuthState> {
     if (state.status != AuthStatus.unlocked) return;
     _inactivityTimer?.cancel();
     _repository.lock();
-    emit(const AuthState(status: AuthStatus.locked));
+    emit(
+      state.copyWith(
+        status: AuthStatus.locked,
+        pinInput: '',
+        clearMessage: true,
+      ),
+    );
   }
 
   Future<void> enforceGuardLock() async {
@@ -119,25 +212,40 @@ class AuthCubit extends Cubit<AuthState> {
     if (until != null) {
       _startBlockTimer(until);
     } else {
-      emit(const AuthState(status: AuthStatus.locked));
+      emit(state.copyWith(status: AuthStatus.locked, clearMessage: true));
     }
   }
 
-  void _startBlockTimer(DateTime until) {
+  void _startBlockTimer(
+    DateTime until, {
+    bool? biometricAvailable,
+    bool? biometricEnabled,
+  }) {
     _inactivityTimer?.cancel();
     _blockTimer?.cancel();
     void tick() {
       final seconds = until.difference(DateTime.now()).inSeconds + 1;
       if (seconds <= 0) {
         _blockTimer?.cancel();
-        emit(const AuthState(status: AuthStatus.locked));
+        emit(
+          state.copyWith(
+            status: AuthStatus.locked,
+            remainingSeconds: 0,
+            clearBlockedUntil: true,
+          ),
+        );
         return;
       }
-      emit(AuthState(
-        status: AuthStatus.blocked,
-        blockedUntil: until,
-        remainingSeconds: seconds,
-      ));
+      emit(
+        state.copyWith(
+          status: AuthStatus.blocked,
+          blockedUntil: until,
+          remainingSeconds: seconds,
+          biometricAvailable: biometricAvailable,
+          biometricEnabled: biometricEnabled,
+          pinInput: '',
+        ),
+      );
     }
 
     tick();

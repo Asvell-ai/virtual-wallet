@@ -19,6 +19,8 @@ class AuthState extends Equatable {
     this.blockedUntil,
     this.remainingSeconds = 0,
     this.message,
+    this.biometricAvailable = false,
+    this.biometricEnabled = false,
   });
 
   final AuthStatus status;
@@ -28,6 +30,8 @@ class AuthState extends Equatable {
   final DateTime? blockedUntil;
   final int remainingSeconds;
   final String? message;
+  final bool biometricAvailable;
+  final bool biometricEnabled;
 
   bool get isConfirmingSetup => setupFirstPin.isNotEmpty;
 
@@ -41,26 +45,30 @@ class AuthState extends Equatable {
     int? remainingSeconds,
     String? message,
     bool clearMessage = false,
-  }) =>
-      AuthState(
-        status: status ?? this.status,
-        pinInput: pinInput ?? this.pinInput,
-        setupFirstPin: setupFirstPin ?? this.setupFirstPin,
-        failedAttempts: failedAttempts ?? this.failedAttempts,
-        blockedUntil:
-            clearBlockedUntil ? null : blockedUntil ?? this.blockedUntil,
-        remainingSeconds: remainingSeconds ?? this.remainingSeconds,
-        message: clearMessage ? null : message ?? this.message,
-      );
+    bool? biometricAvailable,
+    bool? biometricEnabled,
+  }) => AuthState(
+    status: status ?? this.status,
+    pinInput: pinInput ?? this.pinInput,
+    setupFirstPin: setupFirstPin ?? this.setupFirstPin,
+    failedAttempts: failedAttempts ?? this.failedAttempts,
+    blockedUntil: clearBlockedUntil ? null : blockedUntil ?? this.blockedUntil,
+    remainingSeconds: remainingSeconds ?? this.remainingSeconds,
+    message: clearMessage ? null : message ?? this.message,
+    biometricAvailable: biometricAvailable ?? this.biometricAvailable,
+    biometricEnabled: biometricEnabled ?? this.biometricEnabled,
+  );
 
   @override
   List<Object?> get props => [
-        status,
-        pinInput,
-        setupFirstPin,
-        failedAttempts,
-        blockedUntil,
-        remainingSeconds,
-        message,
-      ];
+    status,
+    pinInput,
+    setupFirstPin,
+    failedAttempts,
+    blockedUntil,
+    remainingSeconds,
+    message,
+    biometricAvailable,
+    biometricEnabled,
+  ];
 }
