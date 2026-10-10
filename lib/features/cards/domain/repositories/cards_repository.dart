@@ -6,6 +6,8 @@ abstract interface class CardsRepository {
     required String name,
     required String number,
     required int initialBalance,
+    int? expiryMonth,
+    int? expiryYear,
     CardType type = CardType.uzcard,
   });
 }

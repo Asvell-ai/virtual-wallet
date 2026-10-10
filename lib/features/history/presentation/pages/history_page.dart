@@ -20,60 +20,7 @@ class HistoryPage extends StatelessWidget {
             appBar: AppBar(title: const Text('Tranzaksiyalar tarixi')),
             body: Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 14),
-                  child: FadeSlideIn(
-                    child: Container(
-                      padding: const EdgeInsets.all(18),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(22),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .primaryContainer,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Icon(
-                              Icons.insights_rounded,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                          ),
-                          const SizedBox(width: 13),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'Barcha operatsiyalar',
-                                  style: TextStyle(fontWeight: FontWeight.w800),
-                                ),
-                                const SizedBox(height: 3),
-                                Text(
-                                  '${state.transactions.length} ta tranzaksiya xavfsiz saqlangan',
-                                  style: TextStyle(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Icon(Icons.verified_user_rounded,
-                              color: Theme.of(context).colorScheme.secondary),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+              
                 SizedBox(
                   height: 52,
                   child: ListView(

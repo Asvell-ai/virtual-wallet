@@ -33,16 +33,22 @@ class CardsRepositoryImpl implements CardsRepository {
     required String name,
     required String number,
     required int initialBalance,
+    int? expiryMonth,
+    int? expiryYear,
     CardType type = CardType.uzcard,
   }) async {
+    final now = DateTime.now();
     final card = WalletCardModel(
       id: _uuid.v4(),
       name: name.trim(),
       number: number.replaceAll(RegExp(r'\D'), ''),
       type: type,
       balance: initialBalance,
-      colorValue: _colors[DateTime.now().microsecondsSinceEpoch % _colors.length],
+      colorValue:
+          _colors[DateTime.now().microsecondsSinceEpoch % _colors.length],
       createdAt: DateTime.now().toUtc(),
+      expiryMonth: expiryMonth ?? now.month,
+      expiryYear: expiryYear ?? (now.year + 5) % 100,
     );
     await _vault.mutate((database) {
       final rows = List<Map<String, dynamic>>.from(database['cards']! as List);

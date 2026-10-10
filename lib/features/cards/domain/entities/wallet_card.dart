@@ -4,8 +4,8 @@ enum CardType { uzcard }
 
 extension CardTypeX on CardType {
   String get label => switch (this) {
-        CardType.uzcard => 'UZCARD',
-      };
+    CardType.uzcard => 'UZCARD',
+  };
 }
 
 class WalletCard extends Equatable {
@@ -17,6 +17,8 @@ class WalletCard extends Equatable {
     required this.balance,
     required this.colorValue,
     required this.createdAt,
+    this.expiryMonth = 12,
+    this.expiryYear = 29,
   });
 
   final String id;
@@ -26,18 +28,34 @@ class WalletCard extends Equatable {
   final int balance;
   final int colorValue;
   final DateTime createdAt;
+  final int expiryMonth;
+  final int expiryYear;
 
   WalletCard copyWith({int? balance}) => WalletCard(
-        id: id,
-        name: name,
-        number: number,
-        type: type,
-        balance: balance ?? this.balance,
-        colorValue: colorValue,
-        createdAt: createdAt,
-      );
+    id: id,
+    name: name,
+    number: number,
+    type: type,
+    balance: balance ?? this.balance,
+    colorValue: colorValue,
+    createdAt: createdAt,
+    expiryMonth: expiryMonth,
+    expiryYear: expiryYear,
+  );
+
+  String get expiryLabel =>
+      '${expiryMonth.toString().padLeft(2, '0')}/${expiryYear.toString().padLeft(2, '0')}';
 
   @override
-  List<Object> get props =>
-      [id, name, number, type, balance, colorValue, createdAt];
+  List<Object> get props => [
+    id,
+    name,
+    number,
+    type,
+    balance,
+    colorValue,
+    createdAt,
+    expiryMonth,
+    expiryYear,
+  ];
 }

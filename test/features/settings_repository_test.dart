@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hamyon/core/security/secure_vault.dart';
 import 'package:hamyon/features/settings/data/repositories/settings_repository_impl.dart';
@@ -29,5 +30,23 @@ void main() {
       await SettingsRepositoryImpl(reopenedVault).getThemeMode(),
       WalletThemeMode.dark,
     );
+  });
+
+  test('tema tanlovi vault qulflanganda ham o‘qiladi', () async {
+    FlutterSecureStorage.setMockInitialValues({});
+    const secureStorage = FlutterSecureStorage();
+    final directory = await Directory.systemTemp.createTemp(
+      'hamyon_locked_theme_test_',
+    );
+    addTearDown(() => directory.delete(recursive: true));
+
+    final vault = SecureVault.forDirectory(directory);
+    await vault.createNew('1234');
+    final repository = SettingsRepositoryImpl(vault, secureStorage);
+    await repository.saveThemeMode(WalletThemeMode.dark);
+
+    vault.lock();
+
+    expect(await repository.getThemeMode(), WalletThemeMode.dark);
   });
 }

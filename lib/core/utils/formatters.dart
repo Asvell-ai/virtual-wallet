@@ -10,6 +10,15 @@ abstract final class AppFormatters {
   static String maskedCard(String number) {
     final digits = number.replaceAll(RegExp(r'\D'), '');
     if (digits.length < 8) return digits;
-    return '${digits.substring(0, 4)} ** ** ${digits.substring(digits.length - 4)}';
+    return '${digits.substring(0, 4)} **** **** ${digits.substring(digits.length - 4)}';
+  }
+
+  static String cardNumber(String number) {
+    final digits = number.replaceAll(RegExp(r'\D'), '');
+    return List.generate((digits.length / 4).ceil(), (index) {
+      final start = index * 4;
+      final end = start + 4 > digits.length ? digits.length : start + 4;
+      return digits.substring(start, end);
+    }).join(' ');
   }
 }

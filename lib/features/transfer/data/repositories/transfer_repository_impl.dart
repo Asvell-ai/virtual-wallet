@@ -7,7 +7,8 @@ import 'package:hamyon/features/transfer/domain/repositories/transfer_repository
 import 'package:uuid/uuid.dart';
 
 class TransferRepositoryImpl implements TransferRepository {
-  TransferRepositoryImpl(this._vault, {Uuid uuid = const Uuid()}) : _uuid = uuid;
+  TransferRepositoryImpl(this._vault, {Uuid uuid = const Uuid()})
+    : _uuid = uuid;
 
   final SecureVault _vault;
   final Uuid _uuid;
@@ -20,11 +21,15 @@ class TransferRepositoryImpl implements TransferRepository {
     required int commission,
   }) async {
     final result = await _vault.mutate((database) async {
-      final cardRows = List<Map<String, dynamic>>.from(database['cards']! as List);
-      final sourceIndex =
-          cardRows.indexWhere((row) => row['id'] == sourceCardId);
-      final destinationIndex =
-          cardRows.indexWhere((row) => row['id'] == destinationCardId);
+      final cardRows = List<Map<String, dynamic>>.from(
+        database['cards']! as List,
+      );
+      final sourceIndex = cardRows.indexWhere(
+        (row) => row['id'] == sourceCardId,
+      );
+      final destinationIndex = cardRows.indexWhere(
+        (row) => row['id'] == destinationCardId,
+      );
       if (sourceIndex < 0 || destinationIndex < 0) {
         throw const NotFoundFailure('Tanlangan karta topilmadi');
       }
@@ -54,7 +59,9 @@ class TransferRepositoryImpl implements TransferRepository {
         failureReason: hasBalance ? null : 'Mablag‘ yetarli emas',
       );
       final transaction = WalletTransactionModel.fromEntity(
-        unsigned.copyWith(signature: await _vault.sign(unsigned.signingPayload)),
+        unsigned.copyWith(
+          signature: await _vault.sign(unsigned.signingPayload),
+        ),
       );
 
       if (hasBalance) {

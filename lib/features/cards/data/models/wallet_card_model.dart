@@ -9,9 +9,12 @@ class WalletCardModel extends WalletCard {
     required super.balance,
     required super.colorValue,
     required super.createdAt,
+    super.expiryMonth,
+    super.expiryYear,
   });
 
-  factory WalletCardModel.fromJson(Map<String, dynamic> json) => WalletCardModel(
+  factory WalletCardModel.fromJson(Map<String, dynamic> json) =>
+      WalletCardModel(
         id: json['id']! as String,
         name: json['name']! as String,
         number: json['number']! as String,
@@ -19,25 +22,31 @@ class WalletCardModel extends WalletCard {
         balance: json['balance']! as int,
         colorValue: json['colorValue']! as int,
         createdAt: DateTime.parse(json['createdAt']! as String),
+        expiryMonth: json['expiryMonth'] as int? ?? 12,
+        expiryYear: json['expiryYear'] as int? ?? 29,
       );
 
   factory WalletCardModel.fromEntity(WalletCard card) => WalletCardModel(
-        id: card.id,
-        name: card.name,
-        number: card.number,
-        type: card.type,
-        balance: card.balance,
-        colorValue: card.colorValue,
-        createdAt: card.createdAt,
-      );
+    id: card.id,
+    name: card.name,
+    number: card.number,
+    type: card.type,
+    balance: card.balance,
+    colorValue: card.colorValue,
+    createdAt: card.createdAt,
+    expiryMonth: card.expiryMonth,
+    expiryYear: card.expiryYear,
+  );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'number': number,
-        'type': type.name,
-        'balance': balance,
-        'colorValue': colorValue,
-        'createdAt': createdAt.toUtc().toIso8601String(),
-      };
+    'id': id,
+    'name': name,
+    'number': number,
+    'type': type.name,
+    'balance': balance,
+    'colorValue': colorValue,
+    'createdAt': createdAt.toUtc().toIso8601String(),
+    'expiryMonth': expiryMonth,
+    'expiryYear': expiryYear,
+  };
 }

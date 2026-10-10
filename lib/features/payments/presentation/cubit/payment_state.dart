@@ -9,6 +9,7 @@ class PaymentState extends Equatable {
   const PaymentState({
     this.status = PaymentStatus.initial,
     this.sourceCardId = '',
+    this.sourceBalance = 0,
     this.service = PaymentService.mobile,
     this.accountInput = '',
     this.amountInput = '',
@@ -16,10 +17,12 @@ class PaymentState extends Equatable {
     this.message,
     this.transaction,
     this.requiresLock = false,
+    this.isConfirmingPayment = false,
   });
 
   final PaymentStatus status;
   final String sourceCardId;
+  final int sourceBalance;
   final PaymentService service;
   final String accountInput;
   final String amountInput;
@@ -27,12 +30,19 @@ class PaymentState extends Equatable {
   final String? message;
   final WalletTransaction? transaction;
   final bool requiresLock;
+  final bool isConfirmingPayment;
 
   int get amount => MoneyPolicy.parseAmount(amountInput);
+  bool get canRequestConfirmation =>
+      sourceCardId.isNotEmpty &&
+      accountInput.trim().length >= 5 &&
+      amount > 0 &&
+      amount <= sourceBalance;
 
   PaymentState copyWith({
     PaymentStatus? status,
     String? sourceCardId,
+    int? sourceBalance,
     PaymentService? service,
     String? accountInput,
     String? amountInput,
@@ -41,30 +51,34 @@ class PaymentState extends Equatable {
     bool clearMessage = false,
     WalletTransaction? transaction,
     bool? requiresLock,
+    bool? isConfirmingPayment,
     bool resetForm = false,
-  }) =>
-      PaymentState(
-        status: status ?? this.status,
-        sourceCardId: resetForm ? '' : sourceCardId ?? this.sourceCardId,
-        service: service ?? this.service,
-        accountInput: resetForm ? '' : accountInput ?? this.accountInput,
-        amountInput: resetForm ? '' : amountInput ?? this.amountInput,
-        pinInput: resetForm ? '' : pinInput ?? this.pinInput,
-        message: clearMessage ? null : message ?? this.message,
-        transaction: transaction ?? this.transaction,
-        requiresLock: requiresLock ?? this.requiresLock,
-      );
+  }) => PaymentState(
+    status: status ?? this.status,
+    sourceCardId: resetForm ? '' : sourceCardId ?? this.sourceCardId,
+    sourceBalance: resetForm ? 0 : sourceBalance ?? this.sourceBalance,
+    service: service ?? this.service,
+    accountInput: resetForm ? '' : accountInput ?? this.accountInput,
+    amountInput: resetForm ? '' : amountInput ?? this.amountInput,
+    pinInput: resetForm ? '' : pinInput ?? this.pinInput,
+    message: clearMessage ? null : message ?? this.message,
+    transaction: transaction ?? this.transaction,
+    requiresLock: requiresLock ?? this.requiresLock,
+    isConfirmingPayment: isConfirmingPayment ?? this.isConfirmingPayment,
+  );
 
   @override
   List<Object?> get props => [
-        status,
-        sourceCardId,
-        service,
-        accountInput,
-        amountInput,
-        pinInput,
-        message,
-        transaction,
-        requiresLock,
-      ];
+    status,
+    sourceCardId,
+    sourceBalance,
+    service,
+    accountInput,
+    amountInput,
+    pinInput,
+    message,
+    transaction,
+    requiresLock,
+    isConfirmingPayment,
+  ];
 }

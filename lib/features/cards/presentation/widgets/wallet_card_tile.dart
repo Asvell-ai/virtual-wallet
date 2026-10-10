@@ -5,10 +5,16 @@ import 'package:hamyon/core/utils/formatters.dart';
 import 'package:hamyon/features/cards/domain/entities/wallet_card.dart';
 
 class WalletCardTile extends StatelessWidget {
-  const WalletCardTile({required this.card, this.onQrTap, super.key});
+  const WalletCardTile({
+    required this.card,
+    this.onTap,
+    this.revealSensitive = false,
+    super.key,
+  });
 
   final WalletCard card;
-  final VoidCallback? onQrTap;
+  final VoidCallback? onTap;
+  final bool revealSensitive;
 
   @override
   Widget build(BuildContext context) {
@@ -21,153 +27,211 @@ class WalletCardTile extends StatelessWidget {
           Transform.scale(scale: scale, child: child),
       child: AspectRatio(
         aspectRatio: 1.58,
-        child: Container(
-          clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(28),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [base, Color.lerp(base, const Color(0xFF246BFE), 0.55)!],
+        child: Material(
+          color: Colors.transparent,
+          child: Ink(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(26),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  base,
+                  Color.lerp(base, const Color(0xFF2E6CB7), 0.65)!,
+                ],
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: base.withValues(alpha: 0.24),
+                  blurRadius: 26,
+                  offset: const Offset(0, 14),
+                ),
+              ],
             ),
-            boxShadow: [
-              BoxShadow(
-                color: base.withOpacity(0.26),
-                blurRadius: 28,
-                offset: const Offset(0, 14),
-              ),
-            ],
-          ),
-          child: Stack(
-            children: [
-              Positioned(
-                right: -54,
-                top: -72,
-                child: Container(
-                  width: 190,
-                  height: 190,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white.withOpacity(0.10)),
-                  ),
-                ),
-              ),
-              Positioned(
-                right: -78,
-                bottom: -112,
-                child: Container(
-                  width: 250,
-                  height: 250,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.055),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            child: InkWell(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(26),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(26),
+                child: Stack(
                   children: [
-                    Row(
-                      children: [
-                        Container(
-                          width: 42,
-                          height: 32,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFFFFE7A0), Color(0xFFC89D3C)],
-                            ),
-                          ),
-                          child: Transform.rotate(
-                            angle: math.pi / 2,
-                            child: const Icon(
-                              Icons.wifi_rounded,
-                              color: Color(0xFF6F551C),
-                              size: 20,
-                            ),
-                          ),
+                    Positioned(
+                      top: -70,
+                      right: 52,
+                      child: Transform.rotate(
+                        angle: -0.34,
+                        child: Container(
+                          width: 80,
+                          height: 260,
+                          color: Colors.white.withValues(alpha: 0.045),
                         ),
-                        const Spacer(),
-                        if (onQrTap != null)
-                          IconButton(
-                            onPressed: onQrTap,
-                            tooltip: 'Karta QR-kodi',
-                            style: IconButton.styleFrom(
-                              foregroundColor: Colors.white,
-                              backgroundColor: Colors.white.withOpacity(0.12),
-                            ),
-                            icon: const Icon(Icons.qr_code_2_rounded),
-                          ),
-                        const SizedBox(width: 8),
-                        Text(
-                          card.type.label,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w900,
-                            fontStyle: FontStyle.italic,
-                            letterSpacing: 0.7,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Spacer(),
-                    Text(
-                      AppFormatters.maskedCard(card.number),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        letterSpacing: 1.9,
-                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 17),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                    ...List.generate(
+                      3,
+                      (index) => Positioned(
+                        top: -28.0 + (index.isOdd ? 18 : 0),
+                        right: -12.0 + index * 34,
+                        child: Container(
+                          width: 22,
+                          height: 132 + index * 18,
+                          decoration: BoxDecoration(
+                            color: index.isEven
+                                ? const Color(
+                                    0xFF25C7C9,
+                                  ).withValues(alpha: 0.64)
+                                : const Color(
+                                    0xFF5794E8,
+                                  ).withValues(alpha: 0.55),
+                            borderRadius: const BorderRadius.vertical(
+                              bottom: Radius.circular(11),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(22),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
                             children: [
-                              Text(
-                                card.name.toUpperCase(),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.70),
-                                  fontSize: 10,
-                                  letterSpacing: 1.2,
-                                  fontWeight: FontWeight.w600,
+                              Container(
+                                width: 42,
+                                height: 32,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  gradient: const LinearGradient(
+                                    colors: [
+                                      Color(0xFFFFE7A0),
+                                      Color(0xFFC89D3C),
+                                    ],
+                                  ),
+                                ),
+                                child: const Icon(
+                                  Icons.sim_card_rounded,
+                                  color: Color(0xFF87671E),
+                                  size: 23,
                                 ),
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                AppFormatters.money(card.balance),
-                                style: const TextStyle(
+                              const SizedBox(width: 10),
+                              Transform.rotate(
+                                angle: math.pi / 2,
+                                child: const Icon(
+                                  Icons.wifi_rounded,
                                   color: Colors.white,
-                                  fontSize: 21,
-                                  fontWeight: FontWeight.w800,
+                                  size: 28,
+                                ),
+                              ),
+                              const Spacer(),
+                              const SizedBox(width: 10),
+                              ColorFiltered(
+                                colorFilter: const ColorFilter.mode(
+                                  Colors.white,
+                                  BlendMode.srcIn,
+                                ),
+                                child: Image.asset(
+                                  'assets/images/uzcard_logo.png',
+                                  width: 42,
+                                  height: 56,
+                                  fit: BoxFit.contain,
                                 ),
                               ),
                             ],
                           ),
-                        ),
-                        const Icon(
-                          Icons.contactless_rounded,
-                          color: Colors.white70,
-                          size: 30,
-                        ),
-                      ],
+                          const Spacer(),
+                          FittedBox(
+                            alignment: Alignment.centerLeft,
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              AppFormatters.money(card.balance),
+                              maxLines: 1,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: -0.4,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            revealSensitive
+                                ? AppFormatters.cardNumber(card.number)
+                                : AppFormatters.maskedCard(card.number),
+                            maxLines: 1,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 19,
+                              letterSpacing: 2.1,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Expanded(
+                                child: _CardCaption(
+                                  label: 'CARDHOLDER NAME',
+                                  value: card.name.toUpperCase(),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              _CardCaption(
+                                label: 'VALID THRU',
+                                value: revealSensitive
+                                    ? card.expiryLabel
+                                    : '** / **',
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
-            ],
+            ),
           ),
         ),
       ),
     );
   }
+}
+
+class _CardCaption extends StatelessWidget {
+  const _CardCaption({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        label,
+        style: TextStyle(
+          color: Colors.white.withValues(alpha: 0.62),
+          fontSize: 8,
+          letterSpacing: 1.1,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      const SizedBox(height: 4),
+      Text(
+        value,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 12,
+          letterSpacing: 0.8,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    ],
+  );
 }
