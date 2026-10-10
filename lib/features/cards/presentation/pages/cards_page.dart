@@ -106,9 +106,10 @@ class CardsPage extends StatelessWidget {
                                   child: Container(
                                     padding: const EdgeInsets.all(22),
                                     decoration: BoxDecoration(
-                                      color: scheme.brightness == Brightness.light
-                                          ? AppTheme.navy
-                                          : const Color(0xFF111C31),
+                                      color:
+                                          scheme.brightness == Brightness.light
+                                              ? AppTheme.navy
+                                              : const Color(0xFF111C31),
                                       borderRadius: BorderRadius.circular(26),
                                     ),
                                     child: Row(
@@ -121,32 +122,16 @@ class CardsPage extends StatelessWidget {
                                               Text(
                                                 'Umumiy balans',
                                                 style: TextStyle(
-                                                  color: Colors.white
-                                                      .withOpacity(0.65),
+                                                  color:
+                                                      Colors.white.withOpacity(
+                                                    0.65,
+                                                  ),
                                                   fontSize: 13,
                                                 ),
                                               ),
                                               const SizedBox(height: 8),
-                                              TweenAnimationBuilder<double>(
-                                                tween: Tween(
-                                                  begin: 0,
-                                                  end: state.totalBalance
-                                                      .toDouble(),
-                                                ),
-                                                duration: const Duration(
-                                                    milliseconds: 700),
-                                                curve: Curves.easeOutCubic,
-                                                builder: (context, value, _) =>
-                                                    Text(
-                                                  AppFormatters.money(
-                                                      value.round()),
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 27,
-                                                    fontWeight: FontWeight.w900,
-                                                    letterSpacing: -0.8,
-                                                  ),
-                                                ),
+                                              _AnimatedBalance(
+                                                balance: state.totalBalance,
                                               ),
                                             ],
                                           ),
@@ -176,11 +161,13 @@ class CardsPage extends StatelessWidget {
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleLarge
-                                          ?.copyWith(fontWeight: FontWeight.w900),
+                                          ?.copyWith(
+                                              fontWeight: FontWeight.w900),
                                     ),
                                     const Spacer(),
                                     TextButton.icon(
-                                      onPressed: () => showModalBottomSheet<void>(
+                                      onPressed: () =>
+                                          showModalBottomSheet<void>(
                                         context: context,
                                         isScrollControlled: true,
                                         builder: (_) => BlocProvider.value(
@@ -188,7 +175,8 @@ class CardsPage extends StatelessWidget {
                                           child: const _AddCardSheet(),
                                         ),
                                       ),
-                                      icon: const Icon(Icons.add_rounded, size: 19),
+                                      icon: const Icon(Icons.add_rounded,
+                                          size: 19),
                                       label: const Text('Qo‘shish'),
                                     ),
                                   ],
@@ -199,7 +187,8 @@ class CardsPage extends StatelessWidget {
                           ),
                           if (state.cards.isEmpty)
                             SliverPadding(
-                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
                               sliver: SliverToBoxAdapter(
                                 child: FadeSlideIn(
                                   child: Container(
@@ -207,8 +196,9 @@ class CardsPage extends StatelessWidget {
                                     decoration: BoxDecoration(
                                       color: scheme.surface,
                                       borderRadius: BorderRadius.circular(26),
-                                      border:
-                                          Border.all(color: scheme.outlineVariant),
+                                      border: Border.all(
+                                        color: scheme.outlineVariant,
+                                      ),
                                     ),
                                     child: Column(
                                       children: [
@@ -219,23 +209,28 @@ class CardsPage extends StatelessWidget {
                                             color: scheme.primaryContainer,
                                             shape: BoxShape.circle,
                                           ),
-                                          child: Icon(Icons.add_card_rounded,
-                                              color: scheme.primary, size: 30),
+                                          child: Icon(
+                                            Icons.add_card_rounded,
+                                            color: scheme.primary,
+                                            size: 30,
+                                          ),
                                         ),
                                         const SizedBox(height: 16),
                                         const Text(
                                           'Birinchi UZCARD kartangizni yarating',
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
-                                              fontSize: 17,
-                                              fontWeight: FontWeight.w800),
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.w800,
+                                          ),
                                         ),
                                         const SizedBox(height: 8),
                                         Text(
                                           '16 xonali virtual karta bilan o‘tkazma va to‘lovlarni boshlang.',
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
-                                              color: scheme.onSurfaceVariant),
+                                            color: scheme.onSurfaceVariant,
+                                          ),
                                         ),
                                         const SizedBox(height: 20),
                                         FilledButton.icon(
@@ -244,8 +239,7 @@ class CardsPage extends StatelessWidget {
                                             context: context,
                                             isScrollControlled: true,
                                             builder: (_) => BlocProvider.value(
-                                              value:
-                                                  context.read<CardsCubit>(),
+                                              value: context.read<CardsCubit>(),
                                               child: const _AddCardSheet(),
                                             ),
                                           ),
@@ -269,7 +263,8 @@ class CardsPage extends StatelessWidget {
                                       .selectedCardChanged,
                                   itemBuilder: (context, index) => Padding(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 20),
+                                      horizontal: 20,
+                                    ),
                                     child: WalletCardTile(
                                       card: state.cards[index],
                                       onQrTap: () {
@@ -303,7 +298,8 @@ class CardsPage extends StatelessWidget {
                                           : 7,
                                       height: 7,
                                       margin: const EdgeInsets.symmetric(
-                                          horizontal: 3),
+                                        horizontal: 3,
+                                      ),
                                       decoration: BoxDecoration(
                                         color: index == state.selectedCardIndex
                                             ? scheme.primary
@@ -355,8 +351,7 @@ class CardsPage extends StatelessWidget {
                                             context: context,
                                             isScrollControlled: true,
                                             builder: (_) => BlocProvider.value(
-                                              value:
-                                                  context.read<CardsCubit>(),
+                                              value: context.read<CardsCubit>(),
                                               child: const _AddCardSheet(),
                                             ),
                                           ),
@@ -373,7 +368,8 @@ class CardsPage extends StatelessWidget {
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleLarge
-                                          ?.copyWith(fontWeight: FontWeight.w900),
+                                          ?.copyWith(
+                                              fontWeight: FontWeight.w900),
                                     ),
                                     const Spacer(),
                                     TextButton(
@@ -398,13 +394,16 @@ class CardsPage extends StatelessWidget {
                                     ),
                                     child: Row(
                                       children: [
-                                        Icon(Icons.history_rounded,
-                                            color: scheme.onSurfaceVariant),
+                                        Icon(
+                                          Icons.history_rounded,
+                                          color: scheme.onSurfaceVariant,
+                                        ),
                                         const SizedBox(width: 12),
                                         Text(
                                           'Hozircha tranzaksiyalar yo‘q',
                                           style: TextStyle(
-                                              color: scheme.onSurfaceVariant),
+                                            color: scheme.onSurfaceVariant,
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -419,8 +418,8 @@ class CardsPage extends StatelessWidget {
                                           builder: (_) => ReceiptPage(
                                             transaction: transaction,
                                             cards: state.cards,
-                                            receiptService: context
-                                                .read<ReceiptService>(),
+                                            receiptService:
+                                                context.read<ReceiptService>(),
                                           ),
                                         ),
                                       ),
@@ -436,6 +435,67 @@ class CardsPage extends StatelessWidget {
             ),
           );
         },
+      );
+}
+
+class _AnimatedBalance extends StatefulWidget {
+  const _AnimatedBalance({required this.balance});
+
+  final int balance;
+
+  @override
+  State<_AnimatedBalance> createState() => _AnimatedBalanceState();
+}
+
+class _AnimatedBalanceState extends State<_AnimatedBalance>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 700),
+    );
+    _animateTo(widget.balance, from: 0);
+  }
+
+  @override
+  void didUpdateWidget(covariant _AnimatedBalance oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.balance != widget.balance) {
+      _animateTo(widget.balance, from: _animation.value);
+    }
+  }
+
+  void _animateTo(int balance, {required double from}) {
+    _animation = Tween<double>(
+      begin: from,
+      end: balance.toDouble(),
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+    _controller.forward(from: 0);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AnimatedBuilder(
+        animation: _animation,
+        builder: (context, _) => Text(
+          AppFormatters.money(_animation.value.round()),
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 27,
+            fontWeight: FontWeight.w900,
+            letterSpacing: -0.8,
+          ),
+        ),
       );
 }
 
@@ -473,10 +533,12 @@ class _QuickAction extends StatelessWidget {
                   child: Icon(icon, color: color),
                 ),
                 const SizedBox(height: 9),
-                Text(label,
-                    maxLines: 1,
-                    style: const TextStyle(
-                        fontSize: 12, fontWeight: FontWeight.w700)),
+                Text(
+                  label,
+                  maxLines: 1,
+                  style: const TextStyle(
+                      fontSize: 12, fontWeight: FontWeight.w700),
+                ),
               ],
             ),
           ),
@@ -532,8 +594,10 @@ class _AddCardSheet extends StatelessWidget {
                           color: Theme.of(context).colorScheme.primary,
                           borderRadius: BorderRadius.circular(13),
                         ),
-                        child: const Icon(Icons.credit_card_rounded,
-                            color: Colors.white),
+                        child: const Icon(
+                          Icons.credit_card_rounded,
+                          color: Colors.white,
+                        ),
                       ),
                       const SizedBox(width: 12),
                       const Expanded(
@@ -542,9 +606,13 @@ class _AddCardSheet extends StatelessWidget {
                           children: [
                             Text('Karta turi', style: TextStyle(fontSize: 12)),
                             SizedBox(height: 2),
-                            Text('UZCARD',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w900, fontSize: 16)),
+                            Text(
+                              'UZCARD',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w900,
+                                fontSize: 16,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -585,13 +653,14 @@ class _AddCardSheet extends StatelessWidget {
                     prefixIcon: Icon(Icons.account_balance_wallet_outlined),
                   ),
                 ),
-                if (state.message != null && state.status == CardsStatus.failure)
+                if (state.message != null &&
+                    state.status == CardsStatus.failure)
                   Padding(
                     padding: const EdgeInsets.only(top: 12),
                     child: Text(
                       state.message!,
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.error),
+                      style:
+                          TextStyle(color: Theme.of(context).colorScheme.error),
                     ),
                   ),
                 const SizedBox(height: 22),

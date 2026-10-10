@@ -1,14 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-enum AuthStatus {
-  initial,
-  setupRequired,
-  locked,
-  loading,
-  unlocked,
-  blocked,
-  failure,
-}
+enum AuthStatus { initial, setupRequired, locked, unlocked, blocked, failure }
 
 class AuthState extends Equatable {
   const AuthState({
@@ -21,6 +13,7 @@ class AuthState extends Equatable {
     this.message,
     this.biometricAvailable = false,
     this.biometricEnabled = false,
+    this.isSubmitting = false,
   });
 
   final AuthStatus status;
@@ -32,6 +25,7 @@ class AuthState extends Equatable {
   final String? message;
   final bool biometricAvailable;
   final bool biometricEnabled;
+  final bool isSubmitting;
 
   bool get isConfirmingSetup => setupFirstPin.isNotEmpty;
 
@@ -47,28 +41,33 @@ class AuthState extends Equatable {
     bool clearMessage = false,
     bool? biometricAvailable,
     bool? biometricEnabled,
-  }) => AuthState(
-    status: status ?? this.status,
-    pinInput: pinInput ?? this.pinInput,
-    setupFirstPin: setupFirstPin ?? this.setupFirstPin,
-    failedAttempts: failedAttempts ?? this.failedAttempts,
-    blockedUntil: clearBlockedUntil ? null : blockedUntil ?? this.blockedUntil,
-    remainingSeconds: remainingSeconds ?? this.remainingSeconds,
-    message: clearMessage ? null : message ?? this.message,
-    biometricAvailable: biometricAvailable ?? this.biometricAvailable,
-    biometricEnabled: biometricEnabled ?? this.biometricEnabled,
-  );
+    bool? isSubmitting,
+  }) =>
+      AuthState(
+        status: status ?? this.status,
+        pinInput: pinInput ?? this.pinInput,
+        setupFirstPin: setupFirstPin ?? this.setupFirstPin,
+        failedAttempts: failedAttempts ?? this.failedAttempts,
+        blockedUntil:
+            clearBlockedUntil ? null : blockedUntil ?? this.blockedUntil,
+        remainingSeconds: remainingSeconds ?? this.remainingSeconds,
+        message: clearMessage ? null : message ?? this.message,
+        biometricAvailable: biometricAvailable ?? this.biometricAvailable,
+        biometricEnabled: biometricEnabled ?? this.biometricEnabled,
+        isSubmitting: isSubmitting ?? this.isSubmitting,
+      );
 
   @override
   List<Object?> get props => [
-    status,
-    pinInput,
-    setupFirstPin,
-    failedAttempts,
-    blockedUntil,
-    remainingSeconds,
-    message,
-    biometricAvailable,
-    biometricEnabled,
-  ];
+        status,
+        pinInput,
+        setupFirstPin,
+        failedAttempts,
+        blockedUntil,
+        remainingSeconds,
+        message,
+        biometricAvailable,
+        biometricEnabled,
+        isSubmitting,
+      ];
 }

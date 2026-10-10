@@ -59,26 +59,27 @@ class _HamyonAppState extends State<HamyonApp> with WidgetsBindingObserver {
         },
         child: BlocBuilder<SettingsCubit, SettingsState>(
           builder: (context, settings) => MaterialApp(
-          navigatorKey: _navigatorKey,
-          title: 'Hamyon',
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.light(),
-          darkTheme: AppTheme.dark(),
-          themeMode: settings.themeMode,
-          builder: (context, child) => Listener(
-            behavior: HitTestBehavior.translucent,
-            onPointerDown: (_) => context.read<AuthCubit>().registerActivity(),
-            child: child,
-          ),
-          home: BlocBuilder<AuthCubit, AuthState>(
-            builder: (context, state) => switch (state.status) {
-              AuthStatus.unlocked => const HomeShell(),
-              AuthStatus.initial || AuthStatus.loading => const Scaffold(
-                  body: Center(child: CircularProgressIndicator()),
-                ),
-              _ => const PinPage(),
-            },
-          ),
+            navigatorKey: _navigatorKey,
+            title: 'Hamyon',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.light(),
+            darkTheme: AppTheme.dark(),
+            themeMode: settings.themeMode,
+            builder: (context, child) => Listener(
+              behavior: HitTestBehavior.translucent,
+              onPointerDown: (_) =>
+                  context.read<AuthCubit>().registerActivity(),
+              child: child,
+            ),
+            home: BlocBuilder<AuthCubit, AuthState>(
+              builder: (context, state) => switch (state.status) {
+                AuthStatus.unlocked => const HomeShell(),
+                AuthStatus.initial => const Scaffold(
+                    body: Center(child: CircularProgressIndicator()),
+                  ),
+                _ => const PinPage(),
+              },
+            ),
           ),
         ),
       );
