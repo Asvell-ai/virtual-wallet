@@ -1,3 +1,158 @@
-# virtual_wallet
+# Hamyon
 
-A new Flutter project.
+`Hamyon` — haqiqiy pul ishlatmaydigan, barcha ma'lumotni qurilmaning o'zida
+saqlaydigan Flutter virtual hamyon demo ilovasi.
+
+## Tayyor imkoniyatlar
+
+- faqat UZCARD turidagi, 16 xonali raqam, nom va boshlang'ich balans bilan
+  virtual karta qo'shish
+- karta raqamini `8600 ** ** 1234` ko'rinishida yashirish
+- kartalar o'rtasida 0.5% komissiyali pul o'tkazish
+- mobil aloqa, internet va kommunal xizmatlar uchun to'lov
+- bajarilgan va rad etilgan urinishlar tarixi
+- tarixni turi va statusi bo'yicha filtrlash
+- tranzaksiya chekini PDF qilib saqlash va `share_plus` orqali ulashish
+- PIN bilan kirish va har bir pul operatsiyasini PIN bilan tasdiqlash
+- 3 ta xato PINdan keyin 30 soniyalik blok
+- ilova fonga o'tganda yoki 2 daqiqa ishlatilmaganda avtomatik qulf
+- PBKDF2-HMAC-SHA256 + AES-256-GCM bilan shifrlangan lokal fayl
+- har bir tranzaksiya uchun alohida HMAC-SHA256 imzo
+- dark mode
+- premium banking dashboard, karta karuseli va yengil native animatsiyalar
+
+## Arxitektura
+
+Loyiha **feature-first Clean Architecture** tamoyiliga amal qiladi:
+
+```text
+lib/
+├── core/                         # Faqat global va qayta ishlatiladigan qismlar
+│   ├── error/                    # Umumiy Failure turlari
+│   ├── security/                 # PBKDF2, AES-GCM, HMAC va vault
+│   ├── theme/                    # Global tema
+│   ├── utils/                    # Pul siyosati va formatterlar
+│   └── widgets/                  # Bir nechta feature ishlatadigan widgetlar
+└── features/
+    ├── auth/                     # data / domain / presentation
+    ├── cards/                    # data / domain / presentation
+    ├── transfer/                 # data / domain / presentation
+    ├── payments/                 # data / domain / presentation
+    ├── history/                  # data / domain / presentation
+    ├── receipt/                  # domain / presentation
+    ├── home/                     # presentation
+    └── settings/                 # presentation
+```
+
+Har bir feature o'z entity, repository contract, repository implementation,
+use case, Cubit, state va sahifalariga ega. Global `data`, `domain` yoki
+`presentation` papkalari yo'q.
+
+UI'dagi biznes holati `Cubit state` ichida turadi. Alohida widget faqat bir
+necha marta ishlatilsa yoki mustaqil, qayta ishlatiladigan komponent bo'lsa
+chiqarilgan; bir martalik layoutlar sahifaning `build` qismida inline yozilgan.
+
+## Pul hisoblash qoidasi
+
+Pul `double` emas, butun `int` so'm ko'rinishida saqlanadi. Bu floating-point
+xatolarini yo'q qiladi. Transfer bitta shifrlangan vault mutatsiyasi ichida
+tekshiriladi va yoziladi:
+
+1. manba va qabul qiluvchi kartalar qayta topiladi;
+2. summa hamda komissiya tekshiriladi;
+3. `source.balance >= amount + commission` invariant tekshiriladi;
+4. ikkala balans va tranzaksiya bitta ketma-ket operatsiyada yoziladi;
+5. yetarli mablag' bo'lmasa balans o'zgarmaydi, rad etilgan tranzaksiya tarixga
+   yoziladi.
+
+Komissiya formulasi:
+
+```dart
+commission = (amount * 5 + 999) ~/ 1000; // 0.5%, butun so'mga yuqoriga
+```
+
+## Xavfsizlik modeli
+
+`hamyon_vault.dat` faylida karta yoki tranzaksiya JSON'i ochiq saqlanmaydi.
+Faylda faqat KDF parametrlari, salt, nonce, ciphertext va authentication tag
+bor.
+
+- PIN'dan 210 000 iteratsiyali PBKDF2-HMAC-SHA256 orqali 64 bayt olinadi.
+- Birinchi 32 bayt AES-256-GCM shifrlash kaliti.
+- Ikkinchi 32 bayt tranzaksiya HMAC-SHA256 kaliti.
+- Har yozishda yangi 96-bit nonce yaratiladi.
+- AES-GCM fayl darajasidagi o'zgarishni, HMAC esa tranzaksiya darajasidagi
+  o'zgarishni aniqlaydi.
+- Kalitlar ilova qulflanganda xotiradan chiqariladi.
+- Xato urinishlar va blok muddati `flutter_secure_storage` orqali saqlanadi.
+
+> Bu o'quv/demo loyiha. Haqiqiy bank yoki PCI DSS talablari uchun mustaqil
+> security audit, key attestation, jailbreak/root himoyasi va server tomondagi
+> risk nazorati talab qilinadi.
+
+## Ishga tushirish
+
+Bu repository source qismi platformadan mustaqil tayyorlangan. Birinchi marta
+Android platforma fayllarini Flutter SDK bilan generatsiya qiling:
+
+```bash
+flutter --version # Flutter 3.35+ va Dart 3.9+
+flutter create --platforms=android --org uz.hamyon .
+flutter pub get
+flutter run
+```
+
+`flutter create` mavjud `lib/`, `test/` va `pubspec.yaml` ichidagi loyiha
+kodlarini saqlagan holda yetishmayotgan Android runner fayllarini yaratadi.
+
+## Tekshiruvlar
+
+```bash
+flutter analyze
+flutter test
+```
+
+Testlar quyidagilarni qoplaydi:
+
+- 0.5% komissiya hisoblash;
+- UZCARD raqamini 16 raqam bilan cheklash va 4 tadan guruhlash;
+- vault faylida ochiq matn yo'qligi;
+- yopib-ochgandan keyin ma'lumot saqlanishi;
+- noto'g'ri PIN va o'zgartirilgan ciphertext rad etilishi;
+- muvaffaqiyatli transferda balanslar tengligi;
+- mablag' yetmaganda balanslar o'zgarmasligi;
+- HMAC mos kelmaganda tranzaksiya `tampered` deb belgilanishi.
+
+## APK build
+
+```bash
+flutter clean
+flutter pub get
+flutter test
+flutter build apk --release
+```
+
+APK manzili:
+
+```text
+build/app/outputs/flutter-apk/app-release.apk
+```
+
+## GitHub'ga topshirish
+
+```bash
+git init
+git add .
+git commit -m "feat: build local encrypted Hamyon wallet"
+git branch -M main
+git remote add origin <REPOSITORY_URL>
+git push -u origin main
+```
+
+Topshirish sanasi: **2026-yil 13-oktyabr, seshanba**.
+
+## Keyingi bonuslar
+
+- `local_auth` bilan barmoq izi/Face ID
+- karta yoki chek uchun QR-kod
+- tema tanlovini vault ichida doimiy saqlash
