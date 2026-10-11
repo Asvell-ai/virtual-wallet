@@ -22,6 +22,7 @@ class PaymentCubit extends Cubit<PaymentState> {
     state.copyWith(
       status: PaymentStatus.editing,
       service: service,
+      accountInput: '',
       clearMessage: true,
     ),
   );
@@ -94,11 +95,20 @@ class PaymentCubit extends Cubit<PaymentState> {
         requiresLock: false,
       ),
     );
+    var account = state.accountInput.trim();
+    if (state.service == PaymentService.mobile) {
+      final digits = account.replaceAll(RegExp(r'\D'), '');
+      if (digits.length == 9) {
+        account = '+998 $account';
+      } else if (digits.length == 12 && digits.startsWith('998') && !account.startsWith('+')) {
+        account = '+$account';
+      }
+    }
     try {
       final transaction = await _makePayment(
         sourceCardId: state.sourceCardId,
         service: state.service,
-        account: state.accountInput,
+        account: account,
         amount: state.amount,
         pin: state.pinInput,
       );

@@ -33,9 +33,18 @@ class PaymentState extends Equatable {
   final bool isConfirmingPayment;
 
   int get amount => MoneyPolicy.parseAmount(amountInput);
+
+  bool get isAccountValid {
+    if (service == PaymentService.mobile) {
+      final digits = accountInput.replaceAll(RegExp(r'\D'), '');
+      return digits.length == 9 || (digits.length == 12 && digits.startsWith('998'));
+    }
+    return accountInput.trim().length >= 5;
+  }
+
   bool get canRequestConfirmation =>
       sourceCardId.isNotEmpty &&
-      accountInput.trim().length >= 5 &&
+      isAccountValid &&
       amount > 0 &&
       amount <= sourceBalance;
 

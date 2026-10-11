@@ -28,6 +28,14 @@ void main() {
       ready.copyWith(amountInput: '30001').canRequestConfirmation,
       isFalse,
     );
+    expect(
+      ready.copyWith(accountInput: '90 123 45 67').canRequestConfirmation,
+      isTrue,
+    );
+    expect(
+      ready.copyWith(accountInput: '90 123 45').canRequestConfirmation,
+      isFalse,
+    );
   });
 
   test('transfer confirmation requires two different cards, valid amount, and sufficient balance', () {

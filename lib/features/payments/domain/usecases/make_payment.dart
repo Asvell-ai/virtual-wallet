@@ -20,8 +20,13 @@ class MakePayment {
     if (sourceCardId.isEmpty) {
       throw const ValidationFailure('To‘lov kartasini tanlang');
     }
-    if (account.trim().length < 5) {
-      throw const ValidationFailure('Hisob yoki telefon raqamini to‘liq kiriting');
+    if (service == PaymentService.mobile) {
+      final digits = account.replaceAll(RegExp(r'\D'), '');
+      if (digits.length != 9 && !(digits.length == 12 && digits.startsWith('998'))) {
+        throw const ValidationFailure('Telefon raqamini to‘liq kiriting');
+      }
+    } else if (account.trim().length < 5) {
+      throw const ValidationFailure('Hisob raqamini to‘liq kiriting');
     }
     if (amount <= 0) throw const ValidationFailure('Musbat summa kiriting');
     if (pin.length != 4) {

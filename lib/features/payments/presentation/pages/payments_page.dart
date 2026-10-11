@@ -14,6 +14,7 @@ import 'package:hamyon/features/home/presentation/cubit/home_cubit.dart';
 import 'package:hamyon/features/payments/domain/entities/payment_service.dart';
 import 'package:hamyon/features/payments/presentation/cubit/payment_cubit.dart';
 import 'package:hamyon/features/payments/presentation/cubit/payment_state.dart';
+import 'package:hamyon/features/payments/presentation/formatters/phone_number_input_formatter.dart';
 import 'package:hamyon/features/receipt/domain/services/receipt_service.dart';
 import 'package:hamyon/features/receipt/presentation/navigation/receipt_navigation.dart';
 
@@ -86,12 +87,31 @@ class PaymentsPage extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             TextField(
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              key: ValueKey(state.service),
+              keyboardType: state.service == PaymentService.mobile
+                  ? TextInputType.phone
+                  : TextInputType.number,
+              inputFormatters: state.service == PaymentService.mobile
+                  ? [
+                      FilteringTextInputFormatter.allow(RegExp(r'[\d\s+]')),
+                      const PhoneNumberInputFormatter(),
+                    ]
+                  : [FilteringTextInputFormatter.digitsOnly],
               onChanged: context.read<PaymentCubit>().accountChanged,
               decoration: InputDecoration(
                 labelText: state.service.accountLabel,
-                prefixIcon: const Icon(Icons.person_search_outlined),
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                prefixIcon: Icon(switch (state.service) {
+                  PaymentService.mobile => Icons.phone_android_rounded,
+                  PaymentService.internet => Icons.wifi_rounded,
+                  PaymentService.utilities => Icons.person_search_outlined,
+                }),
+                prefix: state.service == PaymentService.mobile
+                    ? const Text('+998 ')
+                    : null,
+                hintText: state.service == PaymentService.mobile
+                    ? ''
+                    : null,
               ),
             ),
             const SizedBox(height: 12),
@@ -134,6 +154,19 @@ class PaymentsPage extends StatelessWidget {
       );
     },
   );
+
+  // String? _accountError(PaymentState state) {
+  //   if (state.accountInput.isEmpty) return null;
+  //   if (state.service == PaymentService.mobile) {
+  //     final digits = state.accountInput.replaceAll(RegExp(r'\D'), '');
+  //     if (digits.length < 9) {
+  //       return 'Telefon raqamini to‘liq kiriting (9 xonali)';
+  //     }
+  //   } else if (state.accountInput.trim().length < 5) {
+  //     return 'Hisob raqamini to‘liq kiriting';
+  //   }
+  //   return null;
+  // }
 
   WalletCard? _selectedCard(List<WalletCard> cards, String selectedId) {
     for (final card in cards) {
@@ -223,12 +256,7 @@ class _CardSelectorField extends StatelessWidget {
           decoration: InputDecoration(
             labelText: label,
             floatingLabelBehavior: FloatingLabelBehavior.always,
-            prefixIcon: Image.asset(
-              "assets/images/uzcard_logo.png",
-              height: 30,
-              width: 30,
-              fit: BoxFit.contain,
-            ),
+            prefixIcon: const Icon(Icons.credit_card_rounded),
             suffixIcon: const Icon(Icons.keyboard_arrow_down_rounded),
           ),
           child: Text(
