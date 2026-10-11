@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hamyon/core/theme/app_theme.dart';
+import 'package:hamyon/core/color/app_colors.dart';
 import 'package:hamyon/core/utils/formatters.dart';
 import 'package:hamyon/features/history/domain/entities/wallet_transaction.dart';
 
@@ -28,7 +28,7 @@ class TransactionTile extends StatelessWidget {
         ? Theme.of(context).colorScheme.error
         : isTransfer
         ? Theme.of(context).colorScheme.primary
-        : AppTheme.mint;
+        : AppColors.mint;
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Material(

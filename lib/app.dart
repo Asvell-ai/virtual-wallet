@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hamyon/core/theme/app_theme.dart';
@@ -29,12 +31,15 @@ class _HamyonAppState extends State<HamyonApp> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    final authCubit = context.read<AuthCubit>();
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.hidden) {
-      final authCubit = context.read<AuthCubit>();
       if (!authCubit.isBiometricOperationInProgress) {
         authCubit.lock();
       }
+    } else if (state == AppLifecycleState.resumed &&
+        !authCubit.isBiometricOperationInProgress) {
+      unawaited(authCubit.unlockWithBiometrics(automatic: true));
     }
   }
 
@@ -46,41 +51,40 @@ class _HamyonAppState extends State<HamyonApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) => BlocListener<AuthCubit, AuthState>(
-        listenWhen: (previous, current) => previous.status != current.status,
-        listener: (context, state) {
-          if (state.status == AuthStatus.unlocked) {
-            context.read<SettingsCubit>().load();
-          } else {
-            context.read<TransferCubit>().clearSensitiveData();
-            context.read<PaymentCubit>().clearSensitiveData();
-            context.read<CardsCubit>().clearSensitiveData();
-            _navigatorKey.currentState?.popUntil((route) => route.isFirst);
-          }
-        },
-        child: BlocBuilder<SettingsCubit, SettingsState>(
-          builder: (context, settings) => MaterialApp(
-            navigatorKey: _navigatorKey,
-            title: 'Hamyon',
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.light(),
-            darkTheme: AppTheme.dark(),
-            themeMode: settings.themeMode,
-            builder: (context, child) => Listener(
-              behavior: HitTestBehavior.translucent,
-              onPointerDown: (_) =>
-                  context.read<AuthCubit>().registerActivity(),
-              child: child,
-            ),
-            home: BlocBuilder<AuthCubit, AuthState>(
-              builder: (context, state) => switch (state.status) {
-                AuthStatus.unlocked => const HomeShell(),
-                AuthStatus.initial => const Scaffold(
-                    body: Center(child: CircularProgressIndicator()),
-                  ),
-                _ => const PinPage(),
-              },
-            ),
-          ),
+    listenWhen: (previous, current) => previous.status != current.status,
+    listener: (context, state) {
+      if (state.status == AuthStatus.unlocked) {
+        context.read<SettingsCubit>().load();
+      } else {
+        context.read<TransferCubit>().clearSensitiveData();
+        context.read<PaymentCubit>().clearSensitiveData();
+        context.read<CardsCubit>().clearSensitiveData();
+        _navigatorKey.currentState?.popUntil((route) => route.isFirst);
+      }
+    },
+    child: BlocBuilder<SettingsCubit, SettingsState>(
+      builder: (context, settings) => MaterialApp(
+        navigatorKey: _navigatorKey,
+        title: 'Hamyon',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.light(),
+        darkTheme: AppTheme.dark(),
+        themeMode: settings.themeMode,
+        builder: (context, child) => Listener(
+          behavior: HitTestBehavior.translucent,
+          onPointerDown: (_) => context.read<AuthCubit>().registerActivity(),
+          child: child,
         ),
-      );
+        home: BlocBuilder<AuthCubit, AuthState>(
+          builder: (context, state) => switch (state.status) {
+            AuthStatus.unlocked => const HomeShell(),
+            AuthStatus.initial => const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            ),
+            _ => const PinPage(),
+          },
+        ),
+      ),
+    ),
+  );
 }

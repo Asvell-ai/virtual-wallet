@@ -103,7 +103,8 @@ class PaymentsPage extends StatelessWidget {
                 labelText: 'To‘lov summasi',
                 suffixText: 'so‘m',
                 prefixIcon: const Icon(Icons.payments_outlined),
-                errorText: (selectedCard != null &&
+                errorText:
+                    (selectedCard != null &&
                         state.amount > 0 &&
                         state.amount > selectedCard.balance)
                     ? 'Kartada yetarli mablag‘ mavjud emas'
@@ -222,7 +223,12 @@ class _CardSelectorField extends StatelessWidget {
           decoration: InputDecoration(
             labelText: label,
             floatingLabelBehavior: FloatingLabelBehavior.always,
-            prefixIcon: const Icon(Icons.credit_card_rounded),
+            prefixIcon: Image.asset(
+              "assets/images/uzcard_logo.png",
+              height: 30,
+              width: 30,
+              fit: BoxFit.contain,
+            ),
             suffixIcon: const Icon(Icons.keyboard_arrow_down_rounded),
           ),
           child: Text(

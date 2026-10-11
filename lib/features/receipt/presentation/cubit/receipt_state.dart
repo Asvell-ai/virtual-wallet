@@ -17,12 +17,12 @@ class ReceiptState extends Equatable {
     ReceiptStatus? status,
     String? filePath,
     String? message,
-  }) =>
-      ReceiptState(
-        status: status ?? this.status,
-        filePath: filePath ?? this.filePath,
-        message: message ?? this.message,
-      );
+    bool clearMessage = false,
+  }) => ReceiptState(
+    status: status ?? this.status,
+    filePath: filePath ?? this.filePath,
+    message: clearMessage ? null : message ?? this.message,
+  );
 
   @override
   List<Object?> get props => [status, filePath, message];

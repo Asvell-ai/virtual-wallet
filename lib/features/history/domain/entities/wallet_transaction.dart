@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:equatable/equatable.dart';
 
 enum TransactionType { transfer, payment }
+
 enum TransactionStatus { completed, failed, tampered }
 
 class WalletTransaction extends Equatable {
@@ -37,54 +38,53 @@ class WalletTransaction extends Equatable {
   final String? failureReason;
 
   String get signingPayload => jsonEncode(<String, dynamic>{
-        'id': id,
-        'type': type.name,
-        'sourceCardId': sourceCardId,
-        'destinationCardId': destinationCardId,
-        'serviceName': serviceName,
-        'account': account,
-        'amount': amount,
-        'commission': commission,
-        'createdAt': createdAt.toUtc().toIso8601String(),
-        'status': status.name,
-        'failureReason': failureReason,
-      });
+    'id': id,
+    'type': type.name,
+    'sourceCardId': sourceCardId,
+    'destinationCardId': destinationCardId,
+    'serviceName': serviceName,
+    'account': account,
+    'amount': amount,
+    'commission': commission,
+    'createdAt': createdAt.toUtc().toIso8601String(),
+    'status': status.name,
+    'failureReason': failureReason,
+  });
 
   WalletTransaction copyWith({
     String? signature,
     bool? integrityValid,
     TransactionStatus? status,
-  }) =>
-      WalletTransaction(
-        id: id,
-        type: type,
-        sourceCardId: sourceCardId,
-        destinationCardId: destinationCardId,
-        serviceName: serviceName,
-        account: account,
-        amount: amount,
-        commission: commission,
-        createdAt: createdAt,
-        status: status ?? this.status,
-        signature: signature ?? this.signature,
-        integrityValid: integrityValid ?? this.integrityValid,
-        failureReason: failureReason,
-      );
+  }) => WalletTransaction(
+    id: id,
+    type: type,
+    sourceCardId: sourceCardId,
+    destinationCardId: destinationCardId,
+    serviceName: serviceName,
+    account: account,
+    amount: amount,
+    commission: commission,
+    createdAt: createdAt,
+    status: status ?? this.status,
+    signature: signature ?? this.signature,
+    integrityValid: integrityValid ?? this.integrityValid,
+    failureReason: failureReason,
+  );
 
   @override
   List<Object?> get props => [
-        id,
-        type,
-        sourceCardId,
-        destinationCardId,
-        serviceName,
-        account,
-        amount,
-        commission,
-        createdAt,
-        status,
-        signature,
-        integrityValid,
-        failureReason,
-      ];
+    id,
+    type,
+    sourceCardId,
+    destinationCardId,
+    serviceName,
+    account,
+    amount,
+    commission,
+    createdAt,
+    status,
+    signature,
+    integrityValid,
+    failureReason,
+  ];
 }

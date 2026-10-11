@@ -79,11 +79,6 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> enableBiometrics(String pin) async {
-    if (!await isBiometricAvailable()) {
-      throw const AuthenticationFailure(
-        'Qurilmada barmoq izi yoki Face ID sozlanmagan',
-      );
-    }
     await verifyPin(pin);
     final authenticated = await _authenticateBiometrically(
       reason: 'Biometrik kirishni yoqish uchun tasdiqlang',
@@ -158,7 +153,9 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   Future<void> _clearGuard() async {
-    await _secureStorage.delete(key: _attemptsKey);
-    await _secureStorage.delete(key: _blockedUntilKey);
+    await Future.wait([
+      _secureStorage.delete(key: _attemptsKey),
+      _secureStorage.delete(key: _blockedUntilKey),
+    ]);
   }
 }

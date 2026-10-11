@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hamyon/core/theme/app_theme.dart';
+import 'package:hamyon/core/color/app_colors.dart';
 import 'package:hamyon/core/utils/formatters.dart';
 import 'package:hamyon/core/widgets/fade_slide_in.dart';
 import 'package:hamyon/core/widgets/primary_button.dart';
@@ -109,7 +109,7 @@ class CardsPage extends StatelessWidget {
                                 padding: const EdgeInsets.all(22),
                                 decoration: BoxDecoration(
                                   color: scheme.brightness == Brightness.light
-                                      ? AppTheme.navy
+                                      ? AppColors.navy
                                       : const Color(0xFF111C31),
                                   borderRadius: BorderRadius.circular(26),
                                 ),
@@ -150,7 +150,7 @@ class CardsPage extends StatelessWidget {
                                       ),
                                       child: const Icon(
                                         Icons.show_chart_rounded,
-                                        color: AppTheme.mint,
+                                        color: AppColors.mint,
                                       ),
                                     ),
                                   ],
@@ -319,7 +319,7 @@ class CardsPage extends StatelessWidget {
                                     child: _QuickAction(
                                       icon: Icons.receipt_long_rounded,
                                       label: 'To‘lov',
-                                      color: AppTheme.mint,
+                                      color: AppColors.mint,
                                       onTap: () {
                                         context
                                             .read<PaymentCubit>()
@@ -603,7 +603,7 @@ class _AddCardSheet extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const Icon(Icons.verified_rounded, color: AppTheme.mint),
+                  const Icon(Icons.verified_rounded, color: AppColors.mint),
                 ],
               ),
             ),

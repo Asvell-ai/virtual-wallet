@@ -27,7 +27,23 @@ class ReceiptPage extends StatelessWidget {
     final successful = transaction.status == TransactionStatus.completed;
     return BlocProvider(
       create: (_) => ReceiptCubit(receiptService),
-      child: BlocBuilder<ReceiptCubit, ReceiptState>(
+      child: BlocConsumer<ReceiptCubit, ReceiptState>(
+        listenWhen: (previous, current) =>
+            previous.message != current.message && current.message != null,
+        listener: (context, state) {
+          final message = state.message;
+          if (message == null) return;
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              SnackBar(
+                content: Text(message),
+                backgroundColor: state.status == ReceiptStatus.failure
+                    ? Theme.of(context).colorScheme.error
+                    : null,
+              ),
+            );
+        },
         builder: (context, state) => Scaffold(
           appBar: AppBar(title: const Text('Tranzaksiya cheki')),
           body: ListView(
@@ -44,7 +60,7 @@ class ReceiptPage extends StatelessWidget {
                     CircleAvatar(
                       radius: 34,
                       backgroundColor: successful
-                          ? Colors.green.withOpacity(0.12)
+                          ? Colors.green.withValues(alpha: 0.12)
                           : Theme.of(context).colorScheme.errorContainer,
                       child: Icon(
                         successful ? Icons.check_rounded : Icons.close_rounded,

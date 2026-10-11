@@ -1,30 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:hamyon/core/color/app_colors.dart';
 
 abstract final class AppTheme {
-  static const Color primary = Color(0xFF246BFE);
-  static const Color navy = Color(0xFF091329);
-  static const Color mint = Color(0xFF26C6A0);
-  static const Color lightBackground = Color(0xFFF3F6FC);
-  static const Color darkBackground = Color(0xFF070B14);
-
   static ThemeData light() => _theme(Brightness.light);
   static ThemeData dark() => _theme(Brightness.dark);
 
   static ThemeData _theme(Brightness brightness) {
     final scheme = ColorScheme.fromSeed(
-      seedColor: primary,
+      seedColor: AppColors.primary,
       brightness: brightness,
-      primary: primary,
-      secondary: mint,
+      primary: AppColors.primary,
+      secondary: AppColors.mint,
       surface: brightness == Brightness.light
           ? Colors.white
-          : const Color(0xFF111827),
+          : AppColors.darkSurface,
     );
     final isLight = brightness == Brightness.light;
     return ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
-      scaffoldBackgroundColor: isLight ? lightBackground : darkBackground,
+      scaffoldBackgroundColor: isLight ? AppColors.lightBackground : AppColors.darkBackground,
       splashFactory: InkSparkle.splashFactory,
       appBarTheme: AppBarTheme(
         elevation: 0,
@@ -48,8 +43,8 @@ abstract final class AppTheme {
       inputDecorationTheme: InputDecorationThemeData(
         filled: true,
         fillColor: isLight
-            ? const Color(0xFFEAF0FA)
-            : const Color(0xFF182235),
+            ? AppColors.lightInputFill
+            : AppColors.darkInputFill,
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
         border: OutlineInputBorder(
@@ -96,7 +91,7 @@ abstract final class AppTheme {
       navigationBarTheme: NavigationBarThemeData(
         height: 72,
         elevation: 0,
-        backgroundColor: isLight ? Colors.white : const Color(0xFF0D1422),
+        backgroundColor: isLight ? Colors.white : AppColors.darkNavBar,
         indicatorColor: scheme.primaryContainer,
         labelTextStyle: WidgetStateProperty.resolveWith(
           (states) => TextStyle(

@@ -21,7 +21,7 @@ saqlaydigan Flutter virtual hamyon demo ilovasi.
 - light/dark tema tanlovi va uni shifrlangan vault ichida saqlash
 - barmoq izi yoki Face ID orqali hamyonni ochish
 - karta ma’lumoti va tranzaksiya cheki uchun QR-kod
-- premium banking dashboard, karta karuseli va yengil native animatsiyalar
+
 
 ## Arxitektura
 
@@ -71,7 +71,7 @@ tekshiriladi va yoziladi:
 Komissiya formulasi:
 
 ```dart
-commission = (amount * 5 + 999) ~/ 1000; // 0.5%, butun so'mga yuqoriga
+commission = (amount * 5 + 999) ~/ 1000; 
 ```
 
 ## Xavfsizlik modeli

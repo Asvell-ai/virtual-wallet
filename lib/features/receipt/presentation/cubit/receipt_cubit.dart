@@ -12,22 +12,35 @@ class ReceiptCubit extends Cubit<ReceiptState> {
     required WalletTransaction transaction,
     required List<WalletCard> cards,
   }) async {
-    emit(state.copyWith(status: ReceiptStatus.working));
+    emit(state.copyWith(status: ReceiptStatus.working, clearMessage: true));
     try {
-      final file = await _service.savePdf(
+      final savedLocation = await _service.savePdf(
         transaction: transaction,
         cards: cards,
       );
-      emit(state.copyWith(
-        status: ReceiptStatus.saved,
-        filePath: file.path,
-        message: 'PDF saqlandi: ${file.path}',
-      ));
+      if (savedLocation == null) {
+        emit(
+          state.copyWith(
+            status: ReceiptStatus.idle,
+            message: 'PDF saqlash bekor qilindi',
+          ),
+        );
+        return;
+      }
+      emit(
+        state.copyWith(
+          status: ReceiptStatus.saved,
+          filePath: savedLocation,
+          message: 'PDF muvaffaqiyatli saqlandi',
+        ),
+      );
     } catch (error) {
-      emit(state.copyWith(
-        status: ReceiptStatus.failure,
-        message: 'PDF xatosi: $error',
-      ));
+      emit(
+        state.copyWith(
+          status: ReceiptStatus.failure,
+          message: 'PDF xatosi: $error',
+        ),
+      );
     }
   }
 
@@ -35,22 +48,26 @@ class ReceiptCubit extends Cubit<ReceiptState> {
     required WalletTransaction transaction,
     required List<WalletCard> cards,
   }) async {
-    emit(state.copyWith(status: ReceiptStatus.working));
+    emit(state.copyWith(status: ReceiptStatus.working, clearMessage: true));
     try {
       final file = await _service.sharePdf(
         transaction: transaction,
         cards: cards,
       );
-      emit(state.copyWith(
-        status: ReceiptStatus.shared,
-        filePath: file.path,
-        message: 'Ulashish oynasi ochildi',
-      ));
+      emit(
+        state.copyWith(
+          status: ReceiptStatus.shared,
+          filePath: file.path,
+          message: 'Ulashish oynasi ochildi',
+        ),
+      );
     } catch (error) {
-      emit(state.copyWith(
-        status: ReceiptStatus.failure,
-        message: 'PDF xatosi: $error',
-      ));
+      emit(
+        state.copyWith(
+          status: ReceiptStatus.failure,
+          message: 'PDF xatosi: $error',
+        ),
+      );
     }
   }
 }

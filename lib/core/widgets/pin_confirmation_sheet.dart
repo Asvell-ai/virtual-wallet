@@ -25,113 +25,115 @@ class PinConfirmationSheet extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     return Material(
       color: Theme.of(context).scaffoldBackgroundColor,
-      child: LayoutBuilder(
-        builder: (context, constraints) => SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: constraints.maxHeight),
-            child: IntrinsicHeight(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
-                child: Column(
-                  children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: IconButton(
-                        tooltip: 'Yopish',
-                        onPressed: submitting
-                            ? null
-                            : () => Navigator.pop(context),
-                        icon: const Icon(Icons.close_rounded),
+      child: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) => SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: IntrinsicHeight(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: IconButton(
+                          tooltip: 'Yopish',
+                          onPressed: submitting
+                              ? null
+                              : () => Navigator.pop(context),
+                          icon: const Icon(Icons.close_rounded),
+                        ),
                       ),
-                    ),
-                    const Spacer(),
-                    Container(
-                      width: 72,
-                      height: 72,
-                      decoration: BoxDecoration(
-                        color: scheme.primaryContainer,
-                        borderRadius: BorderRadius.circular(24),
+                      const Spacer(),
+                      Container(
+                        width: 72,
+                        height: 72,
+                        decoration: BoxDecoration(
+                          color: scheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        child: Icon(
+                          Icons.lock_rounded,
+                          color: scheme.primary,
+                          size: 34,
+                        ),
                       ),
-                      child: Icon(
-                        Icons.lock_rounded,
-                        color: scheme.primary,
-                        size: 34,
+                      const SizedBox(height: 22),
+                      Text(
+                        title,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: -0.5,
+                            ),
                       ),
-                    ),
-                    const SizedBox(height: 22),
-                    Text(
-                      title,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineSmall
-                          ?.copyWith(
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: -0.5,
-                          ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      subtitle,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: scheme.onSurfaceVariant),
-                    ),
-                    const SizedBox(height: 28),
-                    SizedBox(
-                      height: 22,
-                      child: submitting
-                          ? const SizedBox.square(
-                              dimension: 22,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.5,
-                              ),
-                            )
-                          : Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: List.generate(
-                                4,
-                                (index) => AnimatedContainer(
-                                  duration: const Duration(milliseconds: 160),
-                                  curve: Curves.easeOutCubic,
-                                  width: index < pinLength ? 17 : 13,
-                                  height: index < pinLength ? 17 : 13,
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 9,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: index < pinLength
-                                        ? scheme.primary
-                                        : scheme.surfaceContainerHighest,
+                      const SizedBox(height: 8),
+                      Text(
+                        subtitle,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: scheme.onSurfaceVariant),
+                      ),
+                      const SizedBox(height: 28),
+                      SizedBox(
+                        height: 22,
+                        child: submitting
+                            ? const SizedBox.square(
+                                dimension: 22,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.5,
+                                ),
+                              )
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: List.generate(
+                                  4,
+                                  (index) => AnimatedContainer(
+                                    duration: const Duration(milliseconds: 160),
+                                    curve: Curves.easeOutCubic,
+                                    width: index < pinLength ? 17 : 13,
+                                    height: index < pinLength ? 17 : 13,
+                                    margin: const EdgeInsets.symmetric(
+                                      horizontal: 9,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: index < pinLength
+                                          ? scheme.primary
+                                          : scheme.surfaceContainerHighest,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                    ),
-                    SizedBox(
-                      height: 54,
-                      child: message == null
-                          ? null
-                          : Padding(
-                              padding: const EdgeInsets.only(top: 14),
-                              child: Text(
-                                message!,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: scheme.error),
+                      ),
+                      SizedBox(
+                        height: 54,
+                        child: message == null
+                            ? null
+                            : Padding(
+                                padding: const EdgeInsets.only(top: 14),
+                                child: Text(
+                                  message!,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(color: scheme.error),
+                                ),
                               ),
-                            ),
-                    ),
-                    const Spacer(),
-                    SizedBox(
-                      height: 276,
-                      child: GridView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                              childAspectRatio: 1.45,
-                              mainAxisSpacing: 10,
-                              crossAxisSpacing: 14,
-                            ),
-                        itemCount: 12,
+                      ),
+                      const Spacer(),
+                      SizedBox(
+                        height: 286,
+                        child: GridView.builder(
+                          padding: EdgeInsets.zero,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 3,
+                                mainAxisExtent: 64,
+                                mainAxisSpacing: 10,
+                                crossAxisSpacing: 14,
+                              ),
+                          itemCount: 12,
                         itemBuilder: (context, index) {
                           if (index == 9) return const SizedBox.shrink();
                           if (index == 11) {
@@ -168,8 +170,9 @@ class PinConfirmationSheet extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
 
 class _PinKey extends StatelessWidget {

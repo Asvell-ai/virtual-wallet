@@ -121,9 +121,16 @@ class _WalletCardPickerSheet extends StatelessWidget {
                         onTap: () => Navigator.pop(context, card.id),
                         minTileHeight: 72,
                         leading: CircleAvatar(
-                          backgroundColor: Color(card.colorValue),
-                          foregroundColor: Colors.white,
-                          child: const Icon(Icons.credit_card_rounded),
+                          backgroundColor: Color(
+                            card.colorValue,
+                          ).withValues(alpha: 0.16),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: Image.asset(
+                              'assets/images/uzcard_logo.png',
+                              fit: BoxFit.contain,
+                            ),
+                          ),
                         ),
                         title: Text(
                           card.name,

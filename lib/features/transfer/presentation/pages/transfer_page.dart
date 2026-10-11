@@ -51,10 +51,10 @@ class TransferPage extends StatelessWidget {
       final cards = context.watch<CardsCubit>().state.cards;
       final source = _selectedCard(cards, state.sourceCardId);
       final destination = _selectedCard(cards, state.destinationCardId);
-      final hasInsufficientBalance = source != null &&
-          state.amount > 0 &&
-          state.total > source.balance;
-      final canConfirm = cards.length >= 2 &&
+      final hasInsufficientBalance =
+          source != null && state.amount > 0 && state.total > source.balance;
+      final canConfirm =
+          cards.length >= 2 &&
           state.canRequestConfirmation &&
           source != null &&
           state.total <= source.balance;
@@ -82,7 +82,6 @@ class TransferPage extends StatelessWidget {
               label: 'Qaysi kartadan',
               placeholder: 'Yechiladigan kartani tanlang',
               card: source,
-              icon: Icons.credit_card_rounded,
               onTap: () => _pickSource(context),
             ),
             const SizedBox(height: 12),
@@ -90,7 +89,6 @@ class TransferPage extends StatelessWidget {
               label: 'Qaysi kartaga',
               placeholder: 'Qabul qiluvchi kartani tanlang',
               card: destination,
-              icon: Icons.move_down_rounded,
               onTap: () => _pickDestination(context),
             ),
             const SizedBox(height: 12),
@@ -252,14 +250,12 @@ class _CardSelectorField extends StatelessWidget {
     required this.label,
     required this.placeholder,
     required this.card,
-    required this.icon,
     required this.onTap,
   });
 
   final String label;
   final String placeholder;
   final WalletCard? card;
-  final IconData icon;
   final VoidCallback onTap;
 
   @override
@@ -276,7 +272,7 @@ class _CardSelectorField extends StatelessWidget {
           decoration: InputDecoration(
             labelText: label,
             floatingLabelBehavior: FloatingLabelBehavior.always,
-            prefixIcon: Icon(icon),
+            prefixIcon: const Icon(Icons.credit_card_rounded),
             suffixIcon: const Icon(Icons.keyboard_arrow_down_rounded),
           ),
           child: card == null
