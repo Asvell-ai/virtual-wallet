@@ -67,7 +67,10 @@ class CardDetailsPage extends StatelessWidget {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () {
-                      context.read<TransferCubit>().startWithSource(card.id, balance: card.balance);
+                      context.read<TransferCubit>().startWithSource(
+                        card.id,
+                        balance: card.balance,
+                      );
                       Navigator.push(
                         context,
                         MaterialPageRoute<void>(

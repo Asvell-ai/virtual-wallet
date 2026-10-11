@@ -92,5 +92,3 @@ bor.
   qurilma tasdig‘i `local_auth`, unlock ma’lumoti esa Keychain/Keystore orqali
   himoyalangan `flutter_secure_storage` yordamida boshqariladi.
 
-> security audit, key attestation, jailbreak/root himoyasi va server tomondagi
-> risk nazorati talab qilinadi.
