@@ -1,94 +1,83 @@
+<div align="center">
+
 # Hamyon
 
-`Hamyon` — haqiqiy pul ishlatmaydigan, barcha ma'lumotni qurilmaning o'zida
-saqlaydigan Flutter virtual hamyon demo ilovasi.
+**Xavfsiz, local-first virtual hamyon — Flutter'da yaratilgan.**
 
-## Tayyor imkoniyatlar
+[![Flutter](https://img.shields.io/badge/Flutter-3.41-02569B?logo=flutter&logoColor=white)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-3.9-0175C2?logo=dart&logoColor=white)](https://dart.dev)
+![Architecture](https://img.shields.io/badge/Architecture-Clean-6C63FF)
+![State Management](https://img.shields.io/badge/State-Cubit-7B61FF)
 
-- faqat UZCARD turidagi, 16 xonali raqam, nom va boshlang'ich balans bilan
-  virtual karta qo'shish
-- karta raqamini `8600 ** ** 1234` ko'rinishida yashirish
-- kartalar o'rtasida 0.5% komissiyali pul o'tkazish
-- mobil aloqa, internet va kommunal xizmatlar uchun to'lov
-- bajarilgan va rad etilgan urinishlar tarixi
-- tarixni turi va statusi bo'yicha filtrlash
-- tranzaksiya chekini PDF qilib saqlash va `share_plus` orqali ulashish
-- PIN bilan kirish va har bir pul operatsiyasini PIN bilan tasdiqlash
-- 3 ta xato PINdan keyin 30 soniyalik blok
-- ilova fonga o'tganda yoki 2 daqiqa ishlatilmaganda avtomatik qulf
-- PBKDF2-HMAC-SHA256 + AES-256-GCM bilan shifrlangan lokal fayl
-- har bir tranzaksiya uchun alohida HMAC-SHA256 imzo
-- light/dark tema tanlovi va uni shifrlangan vault ichida saqlash
-- barmoq izi yoki Face ID orqali hamyonni ochish
-- karta ma’lumoti va tranzaksiya cheki uchun QR-kod
+Hamyon — virtual kartalar, pul o'tkazmalari va kundalik to'lovlarni boshqarish uchun yaratilgan mobil demo ilova. U fintech interfeyslari, lokal ma'lumotlar xavfsizligi va Clean Architecture yondashuvini amaliy ko'rsatadi.
 
+> Ilova haqiqiy bank tizimiga ulanmaydi va real pul bilan ishlamaydi.
+
+</div>
+
+## Ilova ko'rinishi
+
+<table>
+  <tr>
+    <th>1. PIN orqali kirish</th>
+    <th>2. Asosiy sahifa</th>
+    <th>3. Karta tafsilotlari</th>
+  </tr>
+  <tr>
+    <td><img src="assets/templates/01-auth-pin.png" alt="PIN orqali kirish" width="280" /></td>
+    <td><img src="assets/templates/02-home-overview.png" alt="Hamyon asosiy sahifasi" width="280" /></td>
+    <td><img src="assets/templates/03-card-details.png" alt="Virtual karta tafsilotlari" width="280" /></td>
+  </tr>
+  <tr>
+    <th>4. Tranzaksiya cheki</th>
+    <th>5. Sozlamalar</th>
+    <th>6. Dark mode</th>
+  </tr>
+  <tr>
+    <td><img src="assets/templates/04-transaction-receipt.png" alt="Tranzaksiya cheki" width="280" /></td>
+    <td><img src="assets/templates/05-settings-dark-mode.png" alt="Xavfsizlik va tema sozlamalari" width="280" /></td>
+    <td><img src="assets/templates/06-home-dark-mode.png" alt="Dark mode asosiy sahifasi" width="280" /></td>
+  </tr>
+</table>
+
+## Nimalar qila oladi?
+
+- UZCARD virtual kartalarini qo'shish va balansni boshqarish
+- Kartalar o'rtasida 0.5% komissiya bilan pul o'tkazish
+- Mobil aloqa, internet va kommunal xizmatlar uchun to'lov qilish
+- Muvaffaqiyatli va rad etilgan tranzaksiyalar tarixini filtrlash
+- Chekni QR-kodda ko'rsatish, PDF saqlash yoki ulashish
+- PIN, Face ID yoki barmoq izi bilan himoyalanish
+- Light va dark mavzulardan foydalanish
+
+## Xavfsizlik
+
+Ma'lumotlar qurilmaning o'zida saqlanadi. Vault `PBKDF2-HMAC-SHA256` asosidagi kalit, `AES-256-GCM` shifrlash va har bir tranzaksiya uchun `HMAC-SHA256` imzo bilan himoyalangan. Uchta noto'g'ri PIN urinishidan so'ng vaqtinchalik blok yoqiladi; ilova fonga o'tganda yoki ikki daqiqa faol bo'lmaganda avtomatik qulflanadi.
 
 ## Arxitektura
 
-Loyiha **feature-first Clean Architecture** tamoyiliga amal qiladi:
+Loyiha feature-first Clean Architecture asosida tuzilgan:
 
 ```text
 lib/
-├── core/                         # Faqat global va qayta ishlatiladigan qismlar
-│   ├── error/                    # Umumiy Failure turlari
-│   ├── security/                 # PBKDF2, AES-GCM, HMAC va vault
-│   ├── theme/                    # Global tema
-│   ├── utils/                    # Pul siyosati va formatterlar
-│   └── widgets/                  # Bir nechta feature ishlatadigan widgetlar
+├── core/                 # Theme, security, utilities, shared widgets
 └── features/
-    ├── auth/                     # data / domain / presentation
-    ├── cards/                    # data / domain / presentation
-    ├── transfer/                 # data / domain / presentation
-    ├── payments/                 # data / domain / presentation
-    ├── history/                  # data / domain / presentation
-    ├── receipt/                  # domain / presentation
-    ├── qr/                       # domain / presentation
-    ├── home/                     # presentation
-    └── settings/                 # data / domain / presentation
+    ├── auth/             # Data / Domain / Presentation
+    ├── cards/
+    ├── transfer/
+    ├── payments/
+    ├── history/
+    ├── receipt/
+    ├── qr/
+    ├── home/
+    └── settings/
 ```
 
-Har bir feature o'z entity, repository contract, repository implementation,
-use case, Cubit, state va sahifalariga ega. Global `data`, `domain` yoki
-`presentation` papkalari yo'q.
+Har bir feature repository, use case va Cubit orqali ajratilgan. Pul qiymatlari aniqlikni saqlash uchun `double` emas, butun `int` so'm ko'rinishida yuritiladi.
 
-UI'dagi biznes holati `Cubit state` ichida turadi. Alohida widget faqat bir
-necha marta ishlatilsa yoki mustaqil, qayta ishlatiladigan komponent bo'lsa
-chiqarilgan; bir martalik layoutlar sahifaning `build` qismida inline yozilgan.
+## Ishga tushirish
 
-## Pul hisoblash qoidasi
-
-Pul `double` emas, butun `int` so'm ko'rinishida saqlanadi. Bu floating-point
-xatolarini yo'q qiladi. Transfer bitta shifrlangan vault mutatsiyasi ichida
-tekshiriladi va yoziladi:
-
-1. manba va qabul qiluvchi kartalar qayta topiladi;
-2. summa hamda komissiya tekshiriladi;
-3. `source.balance >= amount + commission` invariant tekshiriladi;
-4. ikkala balans va tranzaksiya bitta ketma-ket operatsiyada yoziladi;
-5. yetarli mablag' bo'lmasa balans o'zgarmaydi, rad etilgan tranzaksiya tarixga
-   yoziladi.
-
-Komissiya formulasi:
-
-```dart
-commission = (amount * 5 + 999) ~/ 1000; 
+```bash
+flutter pub get
+flutter run
 ```
-
-## Xavfsizlik modeli
-
-`hamyon_vault.dat` faylida karta yoki tranzaksiya JSON'i ochiq saqlanmaydi.
-Faylda faqat KDF parametrlari, salt, nonce, ciphertext va authentication tag
-bor.
-
-- PIN'dan 210 000 iteratsiyali PBKDF2-HMAC-SHA256 orqali 64 bayt olinadi.
-- Birinchi 32 bayt AES-256-GCM shifrlash kaliti.
-- Ikkinchi 32 bayt tranzaksiya HMAC-SHA256 kaliti.
-- Har yozishda yangi 96-bit nonce yaratiladi.
-- AES-GCM fayl darajasidagi o'zgarishni, HMAC esa tranzaksiya darajasidagi
-  o'zgarishni aniqlaydi.
-- Kalitlar ilova qulflanganda xotiradan chiqariladi.
-- Xato urinishlar va blok muddati `flutter_secure_storage` orqali saqlanadi.
-- Biometrik kirish faqat foydalanuvchi PIN bilan yoqqanidan keyin ishlaydi;
-  qurilma tasdig‘i `local_auth`, unlock ma’lumoti esa Keychain/Keystore orqali
-  himoyalangan `flutter_secure_storage` yordamida boshqariladi.
-
